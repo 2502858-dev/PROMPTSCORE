@@ -179,7 +179,7 @@ dialog::backdrop{background:rgba(8,12,24,.55)}.tabs{display:flex;gap:6px;margin-
 "use strict";
 
 const $ = (s, r = document) => r.querySelector(s);
-const API = () => (window.PROMPTSCORE_API || "http://127.0.0.1:8000").replace(/\/+$/, "");
+const API = () => (window.PROMPTSCORE_API || "https://promptscore-rho.vercel.app").replace(/\/+$/, "");
 const tok = () => sessionStorage.getItem("ps_token") || "";
 const usr = () => {
   try { return JSON.parse(sessionStorage.getItem("ps_user") || "null"); }
