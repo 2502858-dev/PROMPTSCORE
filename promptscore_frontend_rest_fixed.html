@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PromptScore AI</title>
+<style>
+:root{--bg:#f3f5f8;--sf:#fff;--tx:#14213d;--mu:#5b6579;--ln:#d8dde8;--ac:#2b50ff;--on:#fff;--ok:#157a4f;--wn:#a86a0b;--er:#c0392b;--in:#f8f9fc;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0c111d;--sf:#131a2b;--tx:#e8ecf6;--mu:#97a2bb;--ln:#26304a;--ac:#7f9bff;--on:#0c111d;--ok:#46c48b;--wn:#e3ae52;--er:#f27a6c;--in:#0c111d;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{margin:0;line-height:1.2}button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.top{background:var(--sf);border-bottom:1px solid var(--ln)}
+.bar{max-width:none;margin:0;padding:12px clamp(20px,4vw,64px);display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:18px;letter-spacing:-.01em;margin-right:auto}.brand b{color:var(--ac)}
+nav{display:flex;gap:4px;flex-wrap:wrap}nav a{padding:7px 12px;border-radius:6px;color:var(--mu);text-decoration:none;font-weight:600}
+nav a[aria-current=page]{color:var(--tx);background:var(--bg)}
+.btn{border:1px solid var(--ln);background:var(--sf);border-radius:6px;padding:8px 14px;font-weight:600;cursor:pointer}
+.btn.p{background:var(--ac);color:var(--on);border-color:var(--ac)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.g{border-color:transparent;background:none;color:var(--mu)}.user{color:var(--mu);font-size:14px}
+main{max-width:none;margin:0;padding:28px clamp(20px,4vw,64px) 60px}.view{display:none}.view.on{display:block}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}
+@media(max-width:860px){.split{grid-template-columns:1fr}}
+.panel{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:22px}
+h2{font-size:20px;margin-bottom:4px}.sub{color:var(--mu);margin:0 0 16px}
+label{display:block;font-weight:600;margin:14px 0 6px;font-size:14px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--ln);border-radius:6px;background:var(--in)}
+textarea{min-height:170px;resize:vertical}.row{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.cnt{margin-left:auto;color:var(--mu);font-size:13px}.msg{min-height:22px;margin-top:12px;color:var(--mu);font-size:14px}.msg.err{color:var(--er)}
+.empty{color:var(--mu);padding:40px 10px;text-align:center}
+.score{display:flex;align-items:center;gap:22px;margin-bottom:18px}.dial{position:relative;width:132px;height:132px;flex:none}
+.dial svg{transform:rotate(-90deg)}.dial circle{fill:none;stroke-width:9}.dial .bg{stroke:var(--ln)}
+.dial .fg{stroke:var(--ok);stroke-linecap:round;transition:stroke-dashoffset .8s ease,stroke .3s}
+.dial .n{position:absolute;inset:0;display:grid;place-content:center;text-align:center;font:700 34px/1 ui-serif,Georgia,serif}
+.dial .n small{font:500 12px system-ui;color:var(--mu);margin-top:4px}
+.grade{font-size:20px;font-weight:700}.reason{margin:0;color:var(--mu)}
+.fix{border-top:1px solid var(--ln);padding-top:16px;margin-top:16px}.fix h3{font-size:15px;margin-bottom:8px}
+pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--in);border:1px solid var(--ln);border-radius:6px;padding:14px;font:13.5px/1.55 ui-monospace,Menlo,Consolas,monospace}
+details{margin-top:16px;border-top:1px solid var(--ln);padding-top:12px}summary{cursor:pointer;font-weight:600}
+.dim{margin:10px 0;font-size:14px}.dim b{text-transform:capitalize}
+.seg{display:inline-flex;border:1px solid var(--ln);border-radius:6px;overflow:hidden}.seg button{border:0;background:var(--sf);padding:8px 16px;font-weight:600;cursor:pointer;color:var(--mu)}
+.seg button[aria-pressed=true]{background:var(--ac);color:var(--on)}
+.live{display:inline-flex;align-items:center;gap:6px;color:var(--mu);font-size:14px}.dot{width:9px;height:9px;border-radius:50%;background:var(--ln)}.dot.on{background:var(--ok)}
+.tw{overflow-x:auto;margin-top:16px}table{width:100%;border-collapse:collapse}th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--ln);vertical-align:top}
+th{font-size:13px;color:var(--mu);font-weight:600}td.pr{max-width:420px;overflow-wrap:anywhere}
+dialog{border:1px solid var(--ln);border-radius:10px;background:var(--sf);color:var(--tx);padding:24px;width:min(420px,92vw)}
+dialog::backdrop{background:rgba(8,12,24,.55)}.tabs{display:flex;gap:6px;margin-bottom:6px}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:9}
+.toast{background:var(--tx);color:var(--bg);padding:10px 14px;border-radius:6px;font-size:14px;max-width:320px}.toast.err{background:var(--er);color:#fff}
+.log{max-height:260px;overflow:auto;margin-top:14px}.hide{display:none!important}a.btn{text-decoration:none;display:inline-block}
+.hrow{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:32px;align-items:center;min-height:calc(100svh - 150px)}
+.hero h1{font-size:clamp(30px,4.6vw,50px);letter-spacing:-.02em;margin-bottom:14px}.hero p{font-size:17px;color:var(--mu);margin:0 0 22px;max-width:52ch}
+.chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:26px 0 0}.chips li{border:1px solid var(--ln);border-radius:4px;padding:4px 10px;font-size:13px;color:var(--mu);background:var(--sf)}
+.stage{perspective:1100px;display:grid;place-items:center;height:100%;min-height:320px}
+.scene{position:relative;width:min(420px,78%);aspect-ratio:1/1.02;transform-style:preserve-3d;transform:rotateX(var(--rx,56deg)) rotateZ(var(--rz,-34deg));transition:transform .2s ease-out}
+.plane{position:absolute;inset:0;border:1px solid var(--ln);border-radius:10px;background:var(--sf);padding:20px;box-shadow:0 22px 34px -14px rgba(20,33,61,.3);transform:translateZ(var(--z));animation:bob 6s ease-in-out infinite;animation-delay:var(--d)}
+.plane small{display:block;color:var(--mu);font-size:12px;font-weight:600;margin-bottom:14px}.plane i{display:block;height:9px;border-radius:5px;background:var(--ln);margin-bottom:11px}
+.plane i:nth-child(3){width:78%}.plane i:nth-child(4){width:54%}.plane i.a{background:var(--ac)}
+.plane .big{font:700 64px/1 ui-serif,Georgia,serif;color:var(--ok);margin:6px 0 8px}.plane .gr{font-weight:700}
+@keyframes bob{50%{translate:0 0 14px}}
+@media(max-width:860px){.hrow{grid-template-columns:1fr;min-height:0}.stage{min-height:300px}.row3{grid-template-columns:1fr!important}.cmp{grid-template-columns:1fr!important}}
+.sec{margin-top:60px;padding-top:30px;border-top:1px solid var(--ln)}.sec>h2{font-size:26px;letter-spacing:-.01em;margin-bottom:8px}
+.sec>.lead{color:var(--mu);max-width:90ch;margin:0 0 24px;font-size:16px}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px 32px}
+.steps b{display:block;font-size:17px;margin-bottom:6px}.steps span{color:var(--mu)}
+.row3{display:grid;grid-template-columns:200px minmax(0,1fr) 70px;gap:8px 24px;padding:14px 0;border-bottom:1px solid var(--ln);align-items:baseline}
+.row3 b{font-size:16px}.row3 span{color:var(--mu)}.row3 em{font-style:normal;color:var(--ac);font-weight:700;text-align:right}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:20px}.cmp h3{font-size:15px;margin-bottom:8px}.cmp h3 em{font-style:normal;font-weight:700;margin-left:8px}
+.bad{color:var(--er)}.good{color:var(--ok)}.cap{color:var(--mu);font-size:14px;margin:14px 0 0}
+.bands{list-style:none;margin:0;padding:0;max-width:760px}.bands li{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--ln)}
+.bands b{font-variant-numeric:tabular-nums}.sec details{border-top:0;padding:14px 0;border-bottom:1px solid var(--ln);margin:0}.sec details p{margin:10px 0 0;color:var(--mu)}
+.endcta{margin-top:60px;padding:34px 0 10px;border-top:1px solid var(--ln)}.endcta h2{font-size:26px;margin-bottom:8px}
+.endcta p{color:var(--mu);margin:0 0 18px;max-width:56ch}.foot{margin-top:40px;color:var(--mu);font-size:13px}
+@media(prefers-reduced-motion:reduce){.dial .fg{transition:none}.plane{animation:none}.scene{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="bar">
+  <a class="brand" href="#home" style="color:inherit;text-decoration:none">Prompt<b>Score</b> AI</a>
+  <nav aria-label="Main">
+    <a href="#home" data-v="home">Home</a><a href="#evaluate" data-v="evaluate">Evaluate</a>
+    <a href="#leaderboard" data-v="leaderboard">Leaderboard</a>
+  </nav>
+  <span class="user" id="who"></span><button class="btn p" id="signin">Sign in</button><button class="btn" id="signout">Sign out</button>
+</div></header>
+<main>
+<section class="view" id="v-home">
+  <div class="hrow"><div class="hero">
+    <h1>Know how good your prompt is before you send it.</h1>
+    <p>Paste any prompt and get a score out of 10, a plain explanation of what holds it back, and a stronger rewrite you can use right away.</p>
+    <a class="btn p" href="#evaluate">Score a prompt</a><button class="btn" id="homeIn" type="button">Sign in</button><a class="btn g" href="#leaderboard">View the leaderboard</a>
+    <ul class="chips" aria-label="What gets scored"><li>Clarity</li><li>Context</li><li>Specifics and limits</li><li>Output format</li><li>Technique</li></ul>
+  </div><div class="stage" aria-hidden="true"><div class="scene" id="scene">
+    <div class="plane" style="--z:0px;--d:0s"><small>Your prompt</small><i></i><i></i><i></i><i></i></div>
+    <div class="plane" style="--z:90px;--d:-2s"><small>Score</small><div class="big">8.4</div><div class="gr">Very good</div></div>
+    <div class="plane" style="--z:180px;--d:-4s"><small>Improved prompt</small><i class="a"></i><i></i><i></i><i></i></div>
+  </div></div></div>
+  <div class="sec"><h2>How it works</h2><p class="lead">A good prompt saves time. A vague one costs you rewrites. PromptScore shows you which one you have before you spend a request on it.</p>
+    <ol class="steps"><li><b>1. Paste your prompt</b><span>Add the prompt exactly as you would send it. If you want, say what it is for and what the AI should accomplish, so the review judges it against your real goal.</span></li>
+    <li><b>2. Read your score</b><span>You get a score out of 10 and a grade, with a short explanation of the biggest strength and the biggest weakness in the prompt.</span></li>
+    <li><b>3. Use the rewrite</b><span>Copy the improved prompt, or load it back into the editor and score it again to see how much the changes helped.</span></li></ol>
+  </div>
+  <div class="sec"><h2>What gets scored</h2><p class="lead">Every prompt is judged on five qualities, worth 20 points each. The total is divided by ten to give your score out of 10.</p>
+    <div class="row3"><b>Clarity</b><span>Is the goal precise and easy to act on, or could it be read in several ways?</span><em>20</em></div>
+    <div class="row3"><b>Context</b><span>Does the prompt give the background the task needs, such as the audience, the field, and the material to work from?</span><em>20</em></div>
+    <div class="row3"><b>Specifics and limits</b><span>Are the scope, rules, and signs of a good result stated?</span><em>20</em></div>
+    <div class="row3"><b>Output format</b><span>Does it say what the answer should look like: length, structure, tone, and detail?</span><em>20</em></div>
+    <div class="row3"><b>Technique</b><span>Is the approach right for the job? Simple tasks do not need complex prompts.</span><em>20</em></div>
+  </div>
+  <div class="sec"><h2>A prompt, before and after</h2><p class="lead">An illustration, not a real result.</p>
+    <div class="cmp"><div><h3>Before <em class="bad">2.0 / 10</em></h3><pre>Write about dogs</pre></div>
+    <div><h3>After <em class="good">8.7 / 10</em></h3><pre>You are a veterinary nurse writing for first-time dog owners. Write a 300-word guide to settling a new puppy into the home during the first week. Cover sleeping, feeding, and toilet training. Use a warm tone, three short headed sections, and bullet points. Do not give medical advice.</pre></div></div>
+  </div>
+  <div class="sec"><h2>What your score means</h2><p class="lead">Use the grade as a guide to how much work the prompt still needs.</p>
+    <ul class="bands"><li><b>9.0 to 10</b><span>Excellent</span></li><li><b>7.5 to 8.9</b><span>Very good</span></li><li><b>6.0 to 7.4</b><span>Good</span></li><li><b>4.0 to 5.9</b><span>Developing</span></li><li><b>0 to 3.9</b><span>Needs significant improvement</span></li></ul>
+  </div>
+  <div class="sec"><h2>Common questions</h2>
+    <details><summary>Will the same prompt always get the same score?</summary><p>Scores can shift slightly between runs because the review is written by an AI model.</p></details>
+    <details><summary>Can I raise my score by asking for a high one?</summary><p>No. Only the quality of the prompt counts.</p></details>
+    <details><summary>Does a short prompt score badly?</summary><p>Not by itself. A short prompt can score very well when the task is simple.</p></details>
+    <details><summary>Are my prompts saved?</summary><p>Scored prompts may be saved to your account. Avoid pasting private or confidential information.</p></details>
+    <details><summary>Do I need an account?</summary><p>Yes. Sign in to score prompts, keep your results, and take part in the leaderboard.</p></details>
+  </div>
+  <div class="endcta"><h2>Ready to improve your next prompt?</h2><p>Paste a prompt and see where it stands.</p><a class="btn p" href="#evaluate">Score a prompt</a> <a class="btn g" href="#leaderboard">View the leaderboard</a></div>
+  <p class="foot">PromptScore AI. Scores are guidance from an AI reviewer, not a guarantee of results.</p>
+</section>
+
+<section class="view" id="v-evaluate"><div class="split">
+  <div class="panel"><h2>Score your prompt</h2><p class="sub">Paste a prompt to get a score out of 10, the reasons behind it, and a stronger rewrite.</p>
+    <label for="prompt">Prompt</label><textarea id="prompt" maxlength="8000" placeholder="Act as a senior Python developer. Explain FastAPI dependency injection to a beginner with code examples."></textarea>
+    <label for="purpose">What is it for? (optional)</label><select id="purpose">
+      <option value="">Not specified</option><option value="Coding">Coding</option><option value="Education">Education</option><option value="Research">Research</option>
+      <option value="Content Generation">Content Generation</option><option value="Business Automation">Business Automation</option><option value="Data Analysis">Data Analysis</option><option value="AI Agent">AI Agent</option>
+    </select>
+    <label for="task">What should the AI accomplish? (optional)</label><textarea id="task" style="min-height:70px" maxlength="1000"></textarea>
+    <div class="row"><button class="btn p" id="go">Score prompt</button><button class="btn" id="stop" hidden>Cancel</button><span class="cnt" id="cnt">0 / 8000</span></div>
+    <div class="msg" id="evMsg" role="status" aria-live="polite"></div>
+  </div>
+  <div class="panel" aria-live="polite">
+    <div class="empty" id="empty">Your score and rewrite will appear here.</div>
+    <div id="out" class="hide">
+      <div class="score"><div class="dial"><svg width="132" height="132" viewBox="0 0 132 132" aria-hidden="true">
+        <circle class="bg" cx="66" cy="66" r="57"/><circle class="fg" id="arc" cx="66" cy="66" r="57" stroke-dasharray="358.1" stroke-dashoffset="358.1"/>
+      </svg><div class="n"><span id="num">--</span><small>out of 10</small></div></div>
+      <div><div class="grade" id="grade"></div><p class="reason" id="reason"></p></div></div>
+      <div class="fix" id="fixBox"><h3>Improved prompt</h3><pre id="improved"></pre><div class="row"><button class="btn" id="copy">Copy</button><button class="btn" id="reuse">Score this version</button></div></div>
+      <details id="dimBox" class="hide"><summary>Score breakdown</summary><div id="dims"></div></details>
+      <div id="feedbackBox" class="hide"><div class="fix"><h3>Strengths</h3><ul id="strengths"></ul></div><div class="fix"><h3>Weaknesses</h3><ul id="weaknesses"></ul></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="view" id="v-leaderboard"><div class="panel"><h2>Leaderboard</h2><p class="sub">Top users and top-scoring prompts.</p>
+  <div class="row" style="margin-top:0"><div class="seg" role="group" aria-label="Leaderboard type"><button id="tUsers" aria-pressed="true">Users</button><button id="tPrompts" aria-pressed="false">Prompts</button></div>
+    <button class="btn" id="refresh">Refresh</button><button class="btn" id="live">Go live</button><span class="live"><span class="dot" id="dot"></span><span id="liveTxt">Not live</span></span></div>
+  <div class="msg" id="lbMsg" role="status"></div><div class="tw" id="tbl"></div>
+</div></section>
+
+</main>
+
+<dialog id="authDlg"><div class="tabs" role="tablist"><button class="btn p" id="tabIn" type="button">Sign in</button><button class="btn" id="tabUp" type="button">Create account</button></div>
+  <div id="fIn"><label for="lEmail">Email</label><input id="lEmail" type="email" autocomplete="username">
+    <label for="lPass">Password</label><input id="lPass" type="password" autocomplete="current-password">
+    <div class="row"><button class="btn p" id="doIn" type="button">Sign in</button><button class="btn g" data-close type="button">Close</button></div></div>
+  <div id="fUp" class="hide"><label for="rName">Name</label><input id="rName" autocomplete="name">
+    <label for="rEmail">Email</label><input id="rEmail" type="email" autocomplete="email">
+    <label for="rEmail2">Confirm email</label><input id="rEmail2" type="email" autocomplete="off">
+    <label for="rPass">Password (8+ characters)</label><input id="rPass" type="password" autocomplete="new-password">
+    <label for="rPass2">Confirm password</label><input id="rPass2" type="password" autocomplete="new-password">
+    <div class="row"><button class="btn p" id="doUp" type="button">Create account</button><button class="btn g" data-close type="button">Close</button></div></div>
+  <div class="msg" id="authMsg" role="alert"></div>
+</dialog>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+
+(() => {
+"use strict";
+
+const $ = (s, r = document) => r.querySelector(s);
+const API = () => (window.PROMPTSCORE_API || "http://127.0.0.1:8000").replace(/\/+$/, "");
+const tok = () => sessionStorage.getItem("ps_token") || "";
+const usr = () => {
+  try { return JSON.parse(sessionStorage.getItem("ps_user") || "null"); }
+  catch { return null; }
+};
+
+let controller = null;
+let current = {};
+let leaderboardType = "users";
+let socket = null;
+let signingOut = false;
+
+const toast = (message, isError = false) => {
+  const el = document.createElement("div");
+  el.className = "toast" + (isError ? " err" : "");
+  el.textContent = message;
+  $("#toasts").append(el);
+  setTimeout(() => el.remove(), 4500);
+};
+
+const errText = data => {
+  const value = data && (data.detail || data.message || data.error);
+  return Array.isArray(value)
+    ? value.map(x => x.msg || x).join("; ")
+    : typeof value === "string"
+      ? value
+      : "Something went wrong. Try again.";
+};
+
+const gradeOf = score =>
+  score < 4 ? "Needs significant improvement" :
+  score < 6 ? "Developing" :
+  score < 7.5 ? "Good" :
+  score < 9 ? "Very good" : "Excellent";
+
+/* ---------------- API ---------------- */
+
+async function raw(path, options = {}) {
+  const headers = {};
+
+  if (options.body !== undefined) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (options.auth !== false && tok()) {
+    headers.Authorization = "Bearer " + tok();
+  }
+
+  let response;
+
+  try {
+    response = await fetch(API() + path, {
+      method: options.method || "GET",
+      headers,
+      body: options.body !== undefined
+        ? JSON.stringify(options.body)
+        : undefined,
+      signal: options.signal
+    });
+  } catch (error) {
+    if (error.name === "AbortError") throw error;
+
+    throw new Error(
+      "Cannot reach the server. Check FastAPI and your API URL."
+    );
+  }
+
+  if (response.status === 401 && options.auth !== false) {
+    signOut({
+      message: "Your session expired. Please sign in again."
+    });
+    openAuth();
+    throw new Error("Your session expired. Please sign in again.");
+  }
+
+  return response;
+}
+
+async function json(path, options = {}) {
+  const response = await raw(path, options);
+  const text = await response.text();
+
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { detail: text };
+  }
+
+  if (!response.ok) throw new Error(errText(data));
+  return data;
+}
+
+/* ---------------- UI RESET ---------------- */
+
+function clearEvaluationUI() {
+  if (controller) {
+    controller.abort();
+    controller = null;
+  }
+
+  current = {};
+
+  $("#prompt").value = "";
+  $("#purpose").value = "";
+  $("#task").value = "";
+  $("#cnt").textContent = "0 / 8000";
+
+  $("#evMsg").textContent = "";
+  $("#evMsg").classList.remove("err");
+
+  $("#empty").textContent = "Your score and rewrite will appear here.";
+  $("#empty").classList.remove("hide");
+  $("#out").classList.add("hide");
+
+  $("#num").textContent = "--";
+  $("#grade").textContent = "";
+  $("#reason").textContent = "";
+  $("#improved").textContent = "";
+
+  $("#dims").replaceChildren();
+  $("#strengths").replaceChildren();
+  $("#weaknesses").replaceChildren();
+
+  $("#dimBox").classList.add("hide");
+  $("#feedbackBox").classList.add("hide");
+  $("#fixBox").classList.remove("hide");
+
+  $("#arc").style.strokeDashoffset = "358.1";
+  $("#arc").style.stroke = "var(--ok)";
+
+  $("#go").disabled = false;
+  $("#stop").hidden = true;
+}
+
+function clearAuthForms() {
+  [
+    "#lEmail", "#lPass",
+    "#rName", "#rEmail", "#rEmail2",
+    "#rPass", "#rPass2"
+  ].forEach(selector => {
+    $(selector).value = "";
+  });
+
+  $("#authMsg").textContent = "";
+}
+
+function clearLeaderboard() {
+  $("#tbl").replaceChildren();
+  $("#lbMsg").textContent = "";
+
+  leaderboardType = "users";
+  $("#tUsers").setAttribute("aria-pressed", "true");
+  $("#tPrompts").setAttribute("aria-pressed", "false");
+}
+
+/* ---------------- ROUTING ---------------- */
+
+function route() {
+  let view = (location.hash || "#home").slice(1);
+
+  if (!["home", "evaluate", "leaderboard"].includes(view)) {
+    view = "home";
+  }
+
+  // Protect pages when there is no login token.
+  if (!tok() && (view === "evaluate" || view === "leaderboard")) {
+    history.replaceState(
+      null,
+      "",
+      location.pathname + location.search + "#home"
+    );
+    view = "home";
+  }
+
+  document.querySelectorAll(".view").forEach(el => {
+    el.classList.toggle("on", el.id === "v-" + view);
+  });
+
+  document.querySelectorAll("nav a[data-v]").forEach(el => {
+    if (el.dataset.v === view) {
+      el.setAttribute("aria-current", "page");
+    } else {
+      el.removeAttribute("aria-current");
+    }
+  });
+
+  if (view === "leaderboard" && tok() && !$("#tbl").children.length) {
+    loadBoard();
+  }
+}
+
+function paint() {
+  const user = usr();
+  const signedIn = !!tok();
+
+  $("#who").textContent = signedIn
+    ? (user?.name || "Signed in")
+    : "";
+
+  $("#signin").classList.toggle("hide", signedIn);
+  $("#signout").classList.toggle("hide", !signedIn);
+  $("#homeIn").classList.toggle("hide", signedIn);
+}
+
+/* ---------------- LOGOUT ---------------- */
+
+function stopLive() {
+  if (socket) {
+    const oldSocket = socket;
+    socket = null;
+
+    oldSocket.onclose = null;
+    oldSocket.onmessage = null;
+    oldSocket.onerror = null;
+
+    try {
+      oldSocket.close();
+    } catch {}
+  }
+
+  $("#dot").classList.remove("on");
+  $("#liveTxt").textContent = "Not live";
+  $("#live").textContent = "Go live";
+}
+
+function signOut({ message = "" } = {}) {
+  if (signingOut) return;
+
+  signingOut = true;
+
+  try {
+    // Stop requests and live updates before clearing the session.
+    stopLive();
+
+    if (controller) {
+      controller.abort();
+      controller = null;
+    }
+
+    // Remove this app's browser session.
+    sessionStorage.removeItem("ps_token");
+    sessionStorage.removeItem("ps_user");
+
+    // Clear any previous user's visible data.
+    clearEvaluationUI();
+    clearLeaderboard();
+    clearAuthForms();
+
+    paint();
+
+    if ($("#authDlg").open) {
+      $("#authDlg").close();
+    }
+
+    // Redirect home and replace the current history entry.
+    history.replaceState(
+      null,
+      "",
+      location.pathname + location.search + "#home"
+    );
+
+    route();
+
+    if (message) toast(message, true);
+  } finally {
+    signingOut = false;
+  }
+}
+
+$("#signout").onclick = () => {
+  signOut();
+  toast("Signed out successfully.");
+};
+
+/* ---------------- AUTHENTICATION ---------------- */
+
+function openAuth() {
+  $("#authMsg").textContent = "";
+
+  if (!$("#authDlg").open) {
+    $("#authDlg").showModal();
+  }
+
+  $("#lEmail").focus();
+}
+
+$("#signin").onclick = openAuth;
+$("#homeIn").onclick = openAuth;
+
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => {
+    button.closest("dialog").close();
+  });
+});
+
+$("#tabIn").onclick = () => {
+  $("#fIn").classList.remove("hide");
+  $("#fUp").classList.add("hide");
+  $("#tabIn").classList.add("p");
+  $("#tabUp").classList.remove("p");
+};
+
+$("#tabUp").onclick = () => {
+  $("#fUp").classList.remove("hide");
+  $("#fIn").classList.add("hide");
+  $("#tabUp").classList.add("p");
+  $("#tabIn").classList.remove("p");
+};
+
+async function login(email, password) {
+  // Never carry one account's visible data into another account.
+  stopLive();
+  clearEvaluationUI();
+  clearLeaderboard();
+
+  const data = await json("/login", {
+    method: "POST",
+    auth: false,
+    body: { email, password }
+  });
+
+  const token = data.token || data.access_token;
+
+  if (!token) {
+    throw new Error("Login response did not include a token.");
+  }
+
+  sessionStorage.setItem("ps_token", token);
+  sessionStorage.setItem("ps_user", JSON.stringify({
+    name: data.name || data.username || email,
+    role: data.role || "user"
+  }));
+
+  paint();
+  route();
+  $("#authDlg").close();
+  clearAuthForms();
+  toast("Signed in successfully.");
+}
+
+$("#doIn").onclick = async () => {
+  const button = $("#doIn");
+  button.disabled = true;
+  $("#authMsg").textContent = "";
+
+  try {
+    await login($("#lEmail").value.trim(), $("#lPass").value);
+  } catch (error) {
+    $("#authMsg").textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+};
+
+$("#doUp").onclick = async () => {
+  const name = $("#rName").value.trim();
+  const email = $("#rEmail").value.trim();
+  const email2 = $("#rEmail2").value.trim();
+  const password = $("#rPass").value;
+  const password2 = $("#rPass2").value;
+  const message = $("#authMsg");
+
+  if (!name || !email || !email2 || !password || !password2) {
+    message.textContent = "Fill in every field.";
+    return;
+  }
+
+  if (email !== email2) {
+    message.textContent = "The email addresses do not match.";
+    return;
+  }
+
+  if (password.length < 8) {
+    message.textContent = "Use a password of at least 8 characters.";
+    return;
+  }
+
+  if (password !== password2) {
+    message.textContent = "The passwords do not match.";
+    return;
+  }
+
+  const button = $("#doUp");
+  button.disabled = true;
+  message.textContent = "";
+
+  try {
+    await json("/register", {
+      method: "POST",
+      auth: false,
+      body: {
+        name,
+        email,
+        confirm_email: email2,
+        password,
+        confirm_password: password2
+      }
+    });
+
+    await login(email, password);
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+};
+
+/* ---------------- EVALUATION ---------------- */
+
+const promptInput = $("#prompt");
+
+promptInput.addEventListener("input", () => {
+  $("#cnt").textContent = promptInput.value.length + " / 8000";
+});
+
+function setEvalMessage(message, isError = false) {
+  $("#evMsg").textContent = message;
+  $("#evMsg").classList.toggle("err", isError);
+}
+
+function toList(value) {
+  if (Array.isArray(value)) {
+    return value.map(item => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object") {
+        return item.description || item.text || item.reason ||
+          JSON.stringify(item);
+      }
+      return String(item);
+    });
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    return [value.trim()];
+  }
+
+  return [];
+}
+
+function numericScore(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+
+  if (
+    typeof value === "string" &&
+    value.trim() &&
+    Number.isFinite(Number(value))
+  ) {
+    return Number(value);
+  }
+
+  return null;
+}
+
+function mergeResult(payload) {
+  if (!payload || typeof payload !== "object") return;
+
+  let data = payload;
+
+  if (payload.evaluation && typeof payload.evaluation === "object") {
+    data = { ...payload, ...payload.evaluation };
+  }
+
+  if (payload.result && typeof payload.result === "object") {
+    data = { ...data, ...payload.result };
+  }
+
+  const score = numericScore(
+    data.final_score ?? data.score ??
+    data.overall_score ?? data.total_score
+  );
+
+  if (score !== null && score >= 0 && score <= 10) {
+    current.score = score;
+  }
+
+  if (data.grade != null) current.grade = data.grade;
+
+  current.reason =
+    data.reason ?? data.explanation ?? data.summary ?? "";
+
+  current.improved =
+    data.improved_prompt ?? data.improvedPrompt ??
+    data.rewritten_prompt ?? data.rewrite ?? "";
+
+  const scores =
+    data.scores ?? data.dimension_scores ?? data.breakdown;
+
+  if (scores && typeof scores === "object") current.scores = scores;
+
+  current.strengths = toList(data.strengths ?? data.positive_points);
+  current.weaknesses = toList(data.weaknesses ?? data.areas_to_improve);
+}
+
+function renderList(selector, items) {
+  const list = $(selector);
+  list.replaceChildren();
+
+  items.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.append(li);
+  });
+}
+
+function renderResult() {
+  const score = numericScore(current.score);
+
+  if (score === null || score < 0 || score > 10) return false;
+
+  $("#empty").classList.add("hide");
+  $("#out").classList.remove("hide");
+
+  $("#num").textContent = score.toFixed(1);
+  $("#arc").style.strokeDashoffset =
+    358.1 * (1 - Math.max(0, Math.min(10, score)) / 10);
+
+  $("#arc").style.stroke =
+    score < 4 ? "var(--er)" :
+    score < 7.5 ? "var(--wn)" : "var(--ok)";
+
+  $("#grade").textContent = current.grade || gradeOf(score);
+  $("#reason").textContent = current.reason || "";
+  $("#improved").textContent = current.improved || "";
+  $("#fixBox").classList.toggle("hide", !current.improved);
+
+  const dimensions = $("#dims");
+  dimensions.replaceChildren();
+
+  const entries = current.scores &&
+    typeof current.scores === "object"
+      ? Object.entries(current.scores)
+      : [];
+
+  entries.forEach(([key, value]) => {
+    const item = document.createElement("div");
+    item.className = "dim";
+
+    const rawScore = value && typeof value === "object"
+      ? (value.score ?? value.value)
+      : value;
+
+    const title = document.createElement("b");
+    title.textContent =
+      key.replaceAll("_", " ") + ": " +
+      (rawScore ?? "n/a") + (rawScore == null ? "" : "/20");
+
+    const note = document.createElement("div");
+    note.textContent = value && typeof value === "object"
+      ? (value.justification ?? value.explanation ?? value.feedback ?? "")
+      : "";
+    note.style.color = "var(--mu)";
+
+    item.append(title, note);
+    dimensions.append(item);
+  });
+
+  $("#dimBox").classList.toggle("hide", entries.length === 0);
+  renderList("#strengths", current.strengths || []);
+  renderList("#weaknesses", current.weaknesses || []);
+
+  $("#feedbackBox").classList.toggle(
+    "hide",
+    !(current.strengths?.length || current.weaknesses?.length)
+  );
+
+  return true;
+}
+
+async function evaluate() {
+  if (!tok()) {
+    openAuth();
+    return;
+  }
+
+  const promptText = promptInput.value.trim();
+
+  if (promptText.length < 10) {
+    setEvalMessage("Enter a prompt with at least a few words.", true);
+    return;
+  }
+
+  current = {};
+  const requestController = new AbortController();
+  controller = requestController;
+
+  $("#go").disabled = true;
+  $("#stop").hidden = false;
+  $("#empty").textContent = "Evaluating your prompt…";
+  $("#empty").classList.remove("hide");
+  $("#out").classList.add("hide");
+
+  setEvalMessage("Sending prompt to the evaluation API…");
+
+  try {
+    const data = await json("/rag/evaluate", {
+      method: "POST",
+      body: {
+        prompt: promptText,
+        intended_purpose: $("#purpose").value || "Not specified",
+        task_description: $("#task").value.trim() || "Not specified"
+      },
+      signal: requestController.signal
+    });
+
+    // Do not display a late response after logout or a session change.
+    if (requestController !== controller || !tok()) return;
+
+    if (data.success === false) {
+      throw new Error(data.detail || data.message || "Evaluation failed.");
+    }
+
+    mergeResult(data);
+
+    if (!renderResult()) {
+      throw new Error("The API response did not contain a valid score from 0 to 10.");
+    }
+
+    setEvalMessage("Evaluation completed successfully.");
+  } catch (error) {
+    if (error.name === "AbortError") {
+      setEvalMessage("Evaluation cancelled.");
+    } else if (requestController === controller && tok()) {
+      setEvalMessage(error.message || "Evaluation failed.", true);
+      $("#empty").textContent = "No score received. Check the error above and try again.";
+      $("#empty").classList.remove("hide");
+      $("#out").classList.add("hide");
+    }
+  } finally {
+    if (requestController === controller) {
+      controller = null;
+      $("#go").disabled = false;
+      $("#stop").hidden = true;
+    }
+  }
+}
+
+$("#go").onclick = evaluate;
+$("#stop").onclick = () => {
+  if (controller) controller.abort();
+};
+
+$("#copy").onclick = async () => {
+  const text = $("#improved").textContent;
+
+  if (!text) {
+    toast("There is no improved prompt to copy.", true);
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("Copied improved prompt.");
+  } catch {
+    toast("Copy failed. Select and copy the text manually.", true);
+  }
+};
+
+$("#reuse").onclick = () => {
+  const text = $("#improved").textContent.trim();
+
+  if (!text) {
+    toast("No improved prompt is available.", true);
+    return;
+  }
+
+  promptInput.value = text;
+  promptInput.dispatchEvent(new Event("input"));
+  location.hash = "#evaluate";
+  promptInput.focus();
+};
+
+/* ---------------- LEADERBOARD ---------------- */
+
+const columns = {
+  users: [
+    ["Rank", "rank"],
+    ["User", "username"],
+    ["Best score", "best_score"],
+    ["Average", "average_score"],
+    ["Prompts scored", "total_evaluations"]
+  ],
+  prompts: [
+    ["Rank", "rank"],
+    ["User", "username"],
+    ["Prompt", "prompt"],
+    ["Score", "score"],
+    ["Grade", "grade"]
+  ]
+};
+
+function renderTable(rows) {
+  const wrapper = $("#tbl");
+  wrapper.replaceChildren();
+
+  if (!Array.isArray(rows) || !rows.length) {
+    wrapper.textContent = "No entries yet. Score a prompt to get on the board.";
+    return;
+  }
+
+  const table = document.createElement("table");
+  const head = table.createTHead().insertRow();
+
+  columns[leaderboardType].forEach(([label]) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    head.append(th);
+  });
+
+  const body = table.createTBody();
+
+  rows.forEach((row, index) => {
+    const tr = body.insertRow();
+
+    columns[leaderboardType].forEach(([, key]) => {
+      const td = tr.insertCell();
+      if (key === "prompt") td.className = "pr";
+
+      const value = row[key];
+      td.textContent = value == null
+        ? (key === "rank" ? String(index + 1) : "–")
+        : String(value);
+    });
+  });
+
+  wrapper.append(table);
+}
+
+async function loadBoard() {
+  if (!tok()) {
+    $("#lbMsg").textContent = "Sign in to view the leaderboard.";
+    $("#tbl").replaceChildren();
+    return;
+  }
+
+  const tokenAtRequest = tok();
+  $("#lbMsg").textContent = "Loading…";
+
+  try {
+    const data = await json("/leaderboard/" + leaderboardType);
+
+    // Ignore responses belonging to a session that has ended or changed.
+    if (!tok() || tok() !== tokenAtRequest) return;
+
+    renderTable(
+      data[leaderboardType] || data.results || data.items || []
+    );
+
+    $("#lbMsg").textContent = "";
+  } catch (error) {
+    if (tok() === tokenAtRequest) {
+      $("#lbMsg").textContent = error.message;
+    }
+  }
+}
+
+function chooseBoard(type) {
+  leaderboardType = type;
+
+  $("#tUsers").setAttribute("aria-pressed", type === "users");
+  $("#tPrompts").setAttribute("aria-pressed", type === "prompts");
+
+  $("#tbl").replaceChildren();
+  loadBoard();
+}
+
+$("#tUsers").onclick = () => chooseBoard("users");
+$("#tPrompts").onclick = () => chooseBoard("prompts");
+$("#refresh").onclick = loadBoard;
+
+function setLive(enabled) {
+  $("#dot").classList.toggle("on", enabled);
+  $("#liveTxt").textContent = enabled ? "Live" : "Not live";
+  $("#live").textContent = enabled ? "Stop live" : "Go live";
+}
+
+$("#live").onclick = () => {
+  if (socket) {
+    stopLive();
+    return;
+  }
+
+  if (!tok()) {
+    openAuth();
+    return;
+  }
+
+  const tokenAtConnect = tok();
+  const url = new URL(API());
+  const wsProtocol = url.protocol === "https:" ? "wss:" : "ws:";
+
+  socket = new WebSocket(
+    wsProtocol + "//" + url.host +
+    "/leaderboard/live?token=" + encodeURIComponent(tokenAtConnect)
+  );
+
+  socket.onopen = () => {
+    if (socket && tok() === tokenAtConnect) setLive(true);
+  };
+
+  socket.onmessage = event => {
+    if (!tok() || tok() !== tokenAtConnect) return;
+
+    try {
+      const data = JSON.parse(event.data);
+      if (data[leaderboardType]) renderTable(data[leaderboardType]);
+    } catch {}
+  };
+
+  socket.onerror = () => {
+    toast("Live updates failed. Check the WebSocket endpoint.", true);
+  };
+
+  socket.onclose = () => {
+    socket = null;
+    setLive(false);
+  };
+};
+
+/* ---------------- HERO MOTION ---------------- */
+
+const scene = $("#scene");
+
+if (scene && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  $("#v-home").addEventListener("pointermove", event => {
+    const rect = $("#v-home").getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    scene.style.setProperty("--rx", (56 - y * 14) + "deg");
+    scene.style.setProperty("--rz", (-34 + x * 24) + "deg");
+  });
+}
+
+/* ---------------- INITIALIZE ---------------- */
+
+window.addEventListener("hashchange", route);
+
+// Clear any stale protected page from a previous browser session.
+paint();
+route();
+
+})();
+
+</script>
+</body>
+</html>

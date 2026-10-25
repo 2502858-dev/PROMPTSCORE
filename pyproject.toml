@@ -1,0 +1,34 @@
+[project]
+name = "prompt"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "mshaheerali12", email = "ashaheer1111@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "bcrypt>=5.0.0",
+    "fastapi[standard]>=0.162.0",
+    "jwt>=1.4.0",
+    "langchain>=1.4.7",
+    "langchain-community>=0.4.2",
+    "langchain-openai>=1.7.2",
+    "motor>=3.7.1",
+    "mtor>=0.7.0",
+    "pinecone>=10.2.0",
+    "pinecone-text>=0.11.0",
+    "pwdlib[argon2]>=0.3.1",
+    "pyjwt>=2.15.1",
+    "pymongo>=4.19.0",
+    "pymupdf>=2.0",
+    "python-dotenv>=1.2.4",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+prompt = "prompt:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"

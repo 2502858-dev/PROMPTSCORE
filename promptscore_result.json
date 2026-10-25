@@ -1,0 +1,55 @@
+{
+  "interpreted_goal": "To provide an explanation of the use of artificial intelligence in cybersecurity, including examples and their benefits.",
+  "primary_use_case": "Educational explanation of AI applications in cybersecurity.",
+  "secondary_use_cases": [
+    "Informative article",
+    "Research summary"
+  ],
+  "output_type": "Explanatory text",
+  "prompt_techniques": [
+    "Examples",
+    "Benefits explanation"
+  ],
+  "complexity": "Medium",
+  "scores": {
+    "clarity": {
+      "score": 15,
+      "justification": "The prompt is mostly clear, asking for an explanation and examples, but could be more specific about the depth of explanation required."
+    },
+    "context": {
+      "score": 5,
+      "justification": "The prompt lacks context regarding the audience or specific aspects of cybersecurity to focus on."
+    },
+    "specificity_constraints": {
+      "score": 10,
+      "justification": "It specifies three examples and benefits but does not define the scope of what types of AI applications to include."
+    },
+    "output_specification": {
+      "score": 10,
+      "justification": "The expected output is somewhat clear, but it does not specify the format or length of the response."
+    },
+    "technique_alignment": {
+      "score": 15,
+      "justification": "The use of examples and benefits is appropriate for the task, but additional techniques could enhance clarity."
+    }
+  },
+  "raw_score": 55,
+  "final_score": 5.5,
+  "grade": "Developing",
+  "strengths": [
+    "The prompt clearly requests examples and benefits, which are relevant to the topic."
+  ],
+  "weaknesses": [
+    "Lacks context about the audience and specific focus areas within cybersecurity."
+  ],
+  "improved_prompt": "Explain how artificial intelligence is used in cybersecurity, focusing on three specific applications. For each application, provide a detailed explanation of its benefits and how it enhances cybersecurity measures.",
+  "improvement_explanation": [
+    "The improved prompt adds specificity by asking for detailed explanations of each application and its benefits, which clarifies the expected depth of the response."
+  ],
+  "rag_evidence": [],
+  "evaluation_confidence": 0.0,
+  "evaluation_notes": [
+    "The prompt is generally understandable but could benefit from more context and specificity to guide the response effectively.",
+    "No sources were retrieved; this evaluation relies on the rubric rather than retrieved PDF evidence."
+  ]
+}
