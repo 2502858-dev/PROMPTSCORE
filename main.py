@@ -19,7 +19,7 @@ app.include_router(leaderbor_api_router)
 app.include_router(leaderbor_router)
 
 
-@app.get("/")
+@app.get("/health")
 async def home():
     return {
         "status": "running",
