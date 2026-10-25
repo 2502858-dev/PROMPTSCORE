@@ -1,4 +1,4 @@
-
+import nltk_setup
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
