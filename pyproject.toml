@@ -15,7 +15,6 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-openai>=1.7.2",
     "motor>=3.7.1",
-    "mtor>=0.7.0",
     "pinecone>=10.2.0",
     "pinecone-text>=0.11.0",
     "pwdlib[argon2]>=0.3.1",
