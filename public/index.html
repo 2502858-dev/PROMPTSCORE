@@ -72,6 +72,24 @@ dialog::backdrop{background:rgba(8,12,24,.55)}.tabs{display:flex;gap:6px;margin-
 .bands b{font-variant-numeric:tabular-nums}.sec details{border-top:0;padding:14px 0;border-bottom:1px solid var(--ln);margin:0}.sec details p{margin:10px 0 0;color:var(--mu)}
 .endcta{margin-top:60px;padding:34px 0 10px;border-top:1px solid var(--ln)}.endcta h2{font-size:26px;margin-bottom:8px}
 .endcta p{color:var(--mu);margin:0 0 18px;max-width:56ch}.foot{margin-top:40px;color:var(--mu);font-size:13px}
+/* Challenge mode */
+.challenge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0}
+.challenge-card{border:1px solid var(--ln);border-radius:9px;padding:22px;background:var(--sf)}
+.challenge-card .emoji{font-size:28px;margin-bottom:8px}.challenge-card h3{font-size:19px;margin-bottom:8px}
+.challenge-card p{color:var(--mu);margin:7px 0}.challenge-card .target{font-size:24px;font-weight:800;color:var(--ac);margin:12px 0}
+.challenge-card .btn{margin-top:12px}
+.challenge-arena{border:1px solid var(--ln);border-radius:10px;background:var(--sf);padding:22px;margin-top:18px}
+.challenge-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.challenge-clock{font-variant-numeric:tabular-nums;font-size:clamp(36px,6vw,56px);font-weight:800;letter-spacing:-.04em;color:var(--ac)}
+.challenge-clock.urgent{color:var(--er)}
+.challenge-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.challenge-stat{background:var(--in);border:1px solid var(--ln);border-radius:7px;padding:13px}
+.challenge-stat small{display:block;color:var(--mu);font-size:12px}.challenge-stat strong{font-size:21px;font-variant-numeric:tabular-nums}
+.challenge-note{color:var(--mu);font-size:14px}
+.challenge-result{margin-top:14px;border-radius:7px;padding:14px;font-weight:700;background:var(--in)}
+.challenge-result.win{border:1px solid var(--ok);color:var(--ok)}
+.challenge-result.loss{border:1px solid var(--er);color:var(--er)}
+@media(max-width:860px){.challenge-grid{grid-template-columns:1fr}.challenge-stats{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.dial .fg{transition:none}.plane{animation:none}.scene{transition:none}}
 </style>
 </head>
@@ -80,7 +98,7 @@ dialog::backdrop{background:rgba(8,12,24,.55)}.tabs{display:flex;gap:6px;margin-
   <a class="brand" href="#home" style="color:inherit;text-decoration:none">Prompt<b>Score</b> AI</a>
   <nav aria-label="Main">
     <a href="#home" data-v="home">Home</a><a href="#evaluate" data-v="evaluate">Evaluate</a>
-    <a href="#leaderboard" data-v="leaderboard">Leaderboard</a>
+    <a href="#challenges" data-v="challenges">Challenges</a><a href="#leaderboard" data-v="leaderboard">Leaderboard</a>
   </nav>
   <span class="user" id="who"></span><button class="btn p" id="signin">Sign in</button><button class="btn" id="signout">Sign out</button>
 </div></header>
@@ -151,6 +169,39 @@ dialog::backdrop{background:rgba(8,12,24,.55)}.tabs{display:flex;gap:6px;margin-
   </div>
 </div></section>
 
+<section class="view" id="v-challenges">
+  <h1 style="font-size:clamp(28px,4vw,40px);margin-bottom:8px">Prompt Challenges</h1>
+  <p class="sub">Beat the clock. Improve your prompt. Reach the target score before time runs out.</p>
+  <div class="challenge-grid">
+    <article class="challenge-card">
+      <div class="emoji">⚡</div><h3>Speed Prompt</h3>
+      <p>Reach a score of at least 8/10 in one evaluated prompt.</p>
+      <div class="target">60 seconds · 8+/10</div>
+      <button class="btn p" id="startChallenge1">Start Challenge</button>
+    </article>
+    <article class="challenge-card">
+      <div class="emoji">🔥</div><h3>Prompt Master</h3>
+      <p>Reach a 9/10 average across at least two evaluated prompts.</p>
+      <div class="target">2 minutes · 9+ average</div>
+      <button class="btn p" id="startChallenge2">Start Challenge</button>
+    </article>
+  </div>
+  <div class="challenge-arena" aria-live="polite">
+    <div class="challenge-top">
+      <div><h2 id="challengeTitle">Ready when you are</h2><p class="challenge-note" id="challengeHint">Choose a challenge above. You will write and score prompts on the Evaluate page.</p></div>
+      <div class="challenge-clock" id="challengeClock">00:00</div>
+    </div>
+    <div class="challenge-stats">
+      <div class="challenge-stat"><small>Prompts evaluated</small><strong id="challengeCount">0</strong></div>
+      <div class="challenge-stat"><small>Latest score</small><strong id="challengeLatest">—</strong></div>
+      <div class="challenge-stat"><small>Average score</small><strong id="challengeAverage">—</strong></div>
+    </div>
+    <div class="row"><button class="btn" id="endChallenge" disabled>End challenge</button><button class="btn" id="resetChallenge">Reset</button><a class="btn p" href="#evaluate" id="goToEvaluator">Go to prompt editor</a></div>
+    <div id="challengeResult" class="challenge-result hide" role="status" aria-live="polite"></div>
+    <p class="challenge-note">Challenge results currently run in this browser session. Server-side deadline enforcement and persistent challenge records are not included in this frontend-only version.</p>
+  </div>
+</section>
+
 <section class="view" id="v-leaderboard"><div class="panel"><h2>Leaderboard</h2><p class="sub">Top users and top-scoring prompts.</p>
   <div class="row" style="margin-top:0"><div class="seg" role="group" aria-label="Leaderboard type"><button id="tUsers" aria-pressed="true">Users</button><button id="tPrompts" aria-pressed="false">Prompts</button></div>
     <button class="btn" id="refresh">Refresh</button><button class="btn" id="live">Go live</button><span class="live"><span class="dot" id="dot"></span><span id="liveTxt">Not live</span></span></div>
@@ -174,856 +225,356 @@ dialog::backdrop{background:rgba(8,12,24,.55)}.tabs{display:flex;gap:6px;margin-
 <div id="toasts" aria-live="polite"></div>
 
 <script>
-
 (() => {
 "use strict";
-
 const $ = (s, r = document) => r.querySelector(s);
 const API = () => (window.PROMPTSCORE_API || "https://promptscore-rho.vercel.app").replace(/\/+$/, "");
 const tok = () => sessionStorage.getItem("ps_token") || "";
-const usr = () => {
-  try { return JSON.parse(sessionStorage.getItem("ps_user") || "null"); }
-  catch { return null; }
-};
+const usr = () => { try { return JSON.parse(sessionStorage.getItem("ps_user") || "null"); } catch { return null; } };
+let controller = null, current = {}, leaderboardType = "users", socket = null, signingOut = false;
 
-let controller = null;
-let current = {};
-let leaderboardType = "users";
-let socket = null;
-let signingOut = false;
+/* Challenge state */
+let challenge = null;
+let challengeInterval = null;
+let challengeRunId = 0;
+let challengeEvalInFlight = false;
+const challengeConfig = {
+  1: { title: "⚡ Speed Prompt", duration: 60, target: 8 },
+  2: { title: "🔥 Prompt Master", duration: 120, target: 9, minPrompts: 2 }
+};
 
 const toast = (message, isError = false) => {
   const el = document.createElement("div");
   el.className = "toast" + (isError ? " err" : "");
-  el.textContent = message;
-  $("#toasts").append(el);
-  setTimeout(() => el.remove(), 4500);
+  el.textContent = message; $("#toasts").append(el); setTimeout(() => el.remove(), 4500);
 };
-
 const errText = data => {
   const value = data && (data.detail || data.message || data.error);
-  return Array.isArray(value)
-    ? value.map(x => x.msg || x).join("; ")
-    : typeof value === "string"
-      ? value
-      : "Something went wrong. Try again.";
+  return Array.isArray(value) ? value.map(x => x.msg || x).join("; ") :
+    typeof value === "string" ? value : "Something went wrong. Try again.";
 };
-
-const gradeOf = score =>
-  score < 4 ? "Needs significant improvement" :
-  score < 6 ? "Developing" :
-  score < 7.5 ? "Good" :
-  score < 9 ? "Very good" : "Excellent";
+const gradeOf = score => score < 4 ? "Needs significant improvement" : score < 6 ? "Developing" : score < 7.5 ? "Good" : score < 9 ? "Very good" : "Excellent";
 
 /* ---------------- API ---------------- */
-
 async function raw(path, options = {}) {
   const headers = {};
-
-  if (options.body !== undefined) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  if (options.auth !== false && tok()) {
-    headers.Authorization = "Bearer " + tok();
-  }
-
+  if (options.body !== undefined) headers["Content-Type"] = "application/json";
+  if (options.auth !== false && tok()) headers.Authorization = "Bearer " + tok();
   let response;
-
   try {
-    response = await fetch(API() + path, {
-      method: options.method || "GET",
-      headers,
-      body: options.body !== undefined
-        ? JSON.stringify(options.body)
-        : undefined,
-      signal: options.signal
-    });
+    response = await fetch(API() + path, { method: options.method || "GET", headers,
+      body: options.body !== undefined ? JSON.stringify(options.body) : undefined, signal: options.signal });
   } catch (error) {
     if (error.name === "AbortError") throw error;
-
-    throw new Error(
-      "Cannot reach the server. Check FastAPI and your API URL."
-    );
+    throw new Error("Cannot reach the server. Check FastAPI and your API URL.");
   }
-
   if (response.status === 401 && options.auth !== false) {
-    signOut({
-      message: "Your session expired. Please sign in again."
-    });
-    openAuth();
-    throw new Error("Your session expired. Please sign in again.");
+    signOut({ message: "Your session expired. Please sign in again." });
+    openAuth(); throw new Error("Your session expired. Please sign in again.");
   }
-
   return response;
 }
-
 async function json(path, options = {}) {
-  const response = await raw(path, options);
-  const text = await response.text();
-
-  let data;
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    data = { detail: text };
-  }
-
-  if (!response.ok) throw new Error(errText(data));
-  return data;
+  const response = await raw(path, options); const text = await response.text();
+  let data; try { data = text ? JSON.parse(text) : {}; } catch { data = { detail: text }; }
+  if (!response.ok) throw new Error(errText(data)); return data;
 }
 
 /* ---------------- UI RESET ---------------- */
-
 function clearEvaluationUI() {
-  if (controller) {
-    controller.abort();
-    controller = null;
-  }
-
+  if (controller) { controller.abort(); controller = null; }
   current = {};
-
-  $("#prompt").value = "";
-  $("#purpose").value = "";
-  $("#task").value = "";
-  $("#cnt").textContent = "0 / 8000";
-
-  $("#evMsg").textContent = "";
-  $("#evMsg").classList.remove("err");
-
-  $("#empty").textContent = "Your score and rewrite will appear here.";
-  $("#empty").classList.remove("hide");
-  $("#out").classList.add("hide");
-
-  $("#num").textContent = "--";
-  $("#grade").textContent = "";
-  $("#reason").textContent = "";
-  $("#improved").textContent = "";
-
-  $("#dims").replaceChildren();
-  $("#strengths").replaceChildren();
-  $("#weaknesses").replaceChildren();
-
-  $("#dimBox").classList.add("hide");
-  $("#feedbackBox").classList.add("hide");
-  $("#fixBox").classList.remove("hide");
-
-  $("#arc").style.strokeDashoffset = "358.1";
-  $("#arc").style.stroke = "var(--ok)";
-
-  $("#go").disabled = false;
-  $("#stop").hidden = true;
+  $("#prompt").value = ""; $("#purpose").value = ""; $("#task").value = ""; $("#cnt").textContent = "0 / 8000";
+  $("#evMsg").textContent = ""; $("#evMsg").classList.remove("err");
+  $("#empty").textContent = "Your score and rewrite will appear here."; $("#empty").classList.remove("hide"); $("#out").classList.add("hide");
+  $("#num").textContent = "--"; $("#grade").textContent = ""; $("#reason").textContent = ""; $("#improved").textContent = "";
+  $("#dims").replaceChildren(); $("#strengths").replaceChildren(); $("#weaknesses").replaceChildren();
+  $("#dimBox").classList.add("hide"); $("#feedbackBox").classList.add("hide"); $("#fixBox").classList.remove("hide");
+  $("#arc").style.strokeDashoffset = "358.1"; $("#arc").style.stroke = "var(--ok)";
+  $("#go").disabled = false; $("#stop").hidden = true;
 }
-
 function clearAuthForms() {
-  [
-    "#lEmail", "#lPass",
-    "#rName", "#rEmail", "#rEmail2",
-    "#rPass", "#rPass2"
-  ].forEach(selector => {
-    $(selector).value = "";
-  });
-
+  ["#lEmail","#lPass","#rName","#rEmail","#rEmail2","#rPass","#rPass2"].forEach(s => { $(s).value = ""; });
   $("#authMsg").textContent = "";
 }
-
 function clearLeaderboard() {
-  $("#tbl").replaceChildren();
-  $("#lbMsg").textContent = "";
-
-  leaderboardType = "users";
-  $("#tUsers").setAttribute("aria-pressed", "true");
-  $("#tPrompts").setAttribute("aria-pressed", "false");
+  $("#tbl").replaceChildren(); $("#lbMsg").textContent = ""; leaderboardType = "users";
+  $("#tUsers").setAttribute("aria-pressed","true"); $("#tPrompts").setAttribute("aria-pressed","false");
 }
+
+/* ---------------- CHALLENGES ---------------- */
+function updateChallengeUI() {
+  const active = !!challenge && challenge.status === "active";
+  $("#endChallenge").disabled = !active;
+  $("#startChallenge1").disabled = active;
+  $("#startChallenge2").disabled = active;
+  if (!challenge) return;
+  $("#challengeTitle").textContent = challengeConfig[challenge.level].title;
+  $("#challengeCount").textContent = String(challenge.scores.length);
+  $("#challengeLatest").textContent = challenge.scores.length ? challenge.scores[challenge.scores.length-1].toFixed(1) + "/10" : "—";
+  const avg = challenge.scores.length ? challenge.scores.reduce((a,b)=>a+b,0)/challenge.scores.length : null;
+  $("#challengeAverage").textContent = avg === null ? "—" : avg.toFixed(1)+"/10";
+}
+function paintClock() {
+  if (!challenge || challenge.status !== "active") return;
+  const left = Math.max(0, Math.ceil((challenge.deadline - Date.now()) / 1000));
+  $("#challengeClock").textContent = String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
+  $("#challengeClock").classList.toggle("urgent", left <= 10);
+  if (left <= 0) finishChallenge(false, "Time is up!");
+}
+function startChallenge(level) {
+  if (!tok()) { openAuth(); toast("Sign in before starting a challenge.", true); return; }
+  if (challengeInterval) clearInterval(challengeInterval);
+  const config = challengeConfig[level];
+  challengeRunId++;
+  challenge = { runId: challengeRunId, level, status:"active", startedAt:Date.now(),
+    deadline:Date.now()+config.duration*1000, scores:[], latest: null };
+  $("#challengeResult").className = "challenge-result hide";
+  $("#challengeResult").textContent = "";
+  $("#challengeHint").textContent = level === 1
+    ? "Submit prompts until one scores 8.0/10 or higher. The timer keeps running while the API evaluates."
+    : "Submit at least two prompts and reach a 9.0/10 average. The timer keeps running while the API evaluates.";
+  updateChallengeUI(); paintClock();
+  challengeInterval = setInterval(paintClock, 200);
+  location.hash = "#evaluate";
+  toast(config.title + " started!");
+}
+function finishChallenge(won, message) {
+  if (!challenge || challenge.status !== "active") return;
+  challenge.status = won ? "won" : "lost";
+  if (challengeInterval) { clearInterval(challengeInterval); challengeInterval = null; }
+  $("#challengeClock").classList.remove("urgent");
+  const result = $("#challengeResult");
+  result.className = "challenge-result " + (won ? "win" : "loss");
+  const avg = challenge.scores.length ? challenge.scores.reduce((a,b)=>a+b,0)/challenge.scores.length : 0;
+  const detail = challenge.level === 1
+    ? `Best/latest qualifying score: ${challenge.scores.length ? Math.max(...challenge.scores).toFixed(1) : "0.0"}/10.`
+    : `Average: ${avg.toFixed(1)}/10 across ${challenge.scores.length} prompt(s).`;
+  result.textContent = (won ? "🎉 CHALLENGE COMPLETE! " : "⏱️ CHALLENGE ENDED. ") + message + " " + detail;
+  $("#challengeHint").textContent = won ? "Target achieved. Start another challenge whenever you are ready." : "Try again with a clearer prompt, more context, and explicit output requirements.";
+  $("#challengeClock").textContent = won ? $("#challengeClock").textContent : "00:00";
+  updateChallengeUI();
+}
+function recordChallengeScore(score, runId) {
+  if (!challenge || challenge.status !== "active" || runId !== challenge.runId) return;
+  if (Date.now() > challenge.deadline) { finishChallenge(false, "The evaluation completed after the deadline."); return; }
+  challenge.scores.push(score);
+  updateChallengeUI();
+  if (challenge.level === 1 && score >= challengeConfig[1].target) {
+    finishChallenge(true, "You reached 8.0/10 or higher within 60 seconds!");
+  } else if (challenge.level === 2 && challenge.scores.length >= challengeConfig[2].minPrompts) {
+    const avg = challenge.scores.reduce((a,b)=>a+b,0)/challenge.scores.length;
+    if (avg >= challengeConfig[2].target) finishChallenge(true, "You reached a 9.0/10 average within two minutes!");
+  }
+}
+function resetChallenge() {
+  if (challengeInterval) { clearInterval(challengeInterval); challengeInterval = null; }
+  challenge = null; challengeEvalInFlight = false;
+  $("#challengeTitle").textContent = "Ready when you are";
+  $("#challengeHint").textContent = "Choose a challenge above. You will write and score prompts on the Evaluate page.";
+  $("#challengeClock").textContent = "00:00"; $("#challengeClock").classList.remove("urgent");
+  $("#challengeCount").textContent = "0"; $("#challengeLatest").textContent = "—"; $("#challengeAverage").textContent = "—";
+  $("#challengeResult").className = "challenge-result hide"; $("#challengeResult").textContent = "";
+  updateChallengeUI();
+}
+$("#startChallenge1").onclick = () => startChallenge(1);
+$("#startChallenge2").onclick = () => startChallenge(2);
+$("#endChallenge").onclick = () => finishChallenge(false, "You ended the challenge manually.");
+$("#resetChallenge").onclick = resetChallenge;
 
 /* ---------------- ROUTING ---------------- */
-
 function route() {
   let view = (location.hash || "#home").slice(1);
-
-  if (!["home", "evaluate", "leaderboard"].includes(view)) {
-    view = "home";
+  if (!["home","evaluate","challenges","leaderboard"].includes(view)) view = "home";
+  if (!tok() && ["evaluate","leaderboard","challenges"].includes(view)) {
+    history.replaceState(null,"",location.pathname+location.search+"#home"); view = "home";
   }
-
-  // Protect pages when there is no login token.
-  if (!tok() && (view === "evaluate" || view === "leaderboard")) {
-    history.replaceState(
-      null,
-      "",
-      location.pathname + location.search + "#home"
-    );
-    view = "home";
-  }
-
-  document.querySelectorAll(".view").forEach(el => {
-    el.classList.toggle("on", el.id === "v-" + view);
-  });
-
+  document.querySelectorAll(".view").forEach(el => el.classList.toggle("on",el.id==="v-"+view));
   document.querySelectorAll("nav a[data-v]").forEach(el => {
-    if (el.dataset.v === view) {
-      el.setAttribute("aria-current", "page");
-    } else {
-      el.removeAttribute("aria-current");
-    }
+    if (el.dataset.v===view) el.setAttribute("aria-current","page"); else el.removeAttribute("aria-current");
   });
-
-  if (view === "leaderboard" && tok() && !$("#tbl").children.length) {
-    loadBoard();
-  }
+  if (view==="leaderboard" && tok() && !$("#tbl").children.length) loadBoard();
 }
-
 function paint() {
-  const user = usr();
-  const signedIn = !!tok();
-
-  $("#who").textContent = signedIn
-    ? (user?.name || "Signed in")
-    : "";
-
-  $("#signin").classList.toggle("hide", signedIn);
-  $("#signout").classList.toggle("hide", !signedIn);
-  $("#homeIn").classList.toggle("hide", signedIn);
+  const user=usr(), signedIn=!!tok();
+  $("#who").textContent=signedIn?(user?.name||"Signed in"):"";
+  $("#signin").classList.toggle("hide",signedIn); $("#signout").classList.toggle("hide",!signedIn); $("#homeIn").classList.toggle("hide",signedIn);
 }
 
 /* ---------------- LOGOUT ---------------- */
-
 function stopLive() {
-  if (socket) {
-    const oldSocket = socket;
-    socket = null;
-
-    oldSocket.onclose = null;
-    oldSocket.onmessage = null;
-    oldSocket.onerror = null;
-
-    try {
-      oldSocket.close();
-    } catch {}
-  }
-
-  $("#dot").classList.remove("on");
-  $("#liveTxt").textContent = "Not live";
-  $("#live").textContent = "Go live";
+  if (socket) { const old=socket; socket=null; old.onclose=null; old.onmessage=null; old.onerror=null; try{old.close();}catch{} }
+  $("#dot").classList.remove("on"); $("#liveTxt").textContent="Not live"; $("#live").textContent="Go live";
 }
-
-function signOut({ message = "" } = {}) {
-  if (signingOut) return;
-
-  signingOut = true;
-
+function signOut({message=""}={}) {
+  if (signingOut) return; signingOut=true;
   try {
-    // Stop requests and live updates before clearing the session.
     stopLive();
-
-    if (controller) {
-      controller.abort();
-      controller = null;
-    }
-
-    // Remove this app's browser session.
-    sessionStorage.removeItem("ps_token");
-    sessionStorage.removeItem("ps_user");
-
-    // Clear any previous user's visible data.
-    clearEvaluationUI();
-    clearLeaderboard();
-    clearAuthForms();
-
-    paint();
-
-    if ($("#authDlg").open) {
-      $("#authDlg").close();
-    }
-
-    // Redirect home and replace the current history entry.
-    history.replaceState(
-      null,
-      "",
-      location.pathname + location.search + "#home"
-    );
-
-    route();
-
-    if (message) toast(message, true);
-  } finally {
-    signingOut = false;
-  }
+    if (controller) { controller.abort(); controller=null; }
+    resetChallenge();
+    sessionStorage.removeItem("ps_token"); sessionStorage.removeItem("ps_user");
+    clearEvaluationUI(); clearLeaderboard(); clearAuthForms(); paint();
+    if ($("#authDlg").open) $("#authDlg").close();
+    history.replaceState(null,"",location.pathname+location.search+"#home"); route();
+    if (message) toast(message,true);
+  } finally { signingOut=false; }
 }
-
-$("#signout").onclick = () => {
-  signOut();
-  toast("Signed out successfully.");
-};
+$("#signout").onclick=()=>{signOut();toast("Signed out successfully.");};
 
 /* ---------------- AUTHENTICATION ---------------- */
-
 function openAuth() {
-  $("#authMsg").textContent = "";
-
-  if (!$("#authDlg").open) {
-    $("#authDlg").showModal();
-  }
-
-  $("#lEmail").focus();
+  $("#authMsg").textContent=""; if (!$("#authDlg").open) $("#authDlg").showModal(); $("#lEmail").focus();
 }
-
-$("#signin").onclick = openAuth;
-$("#homeIn").onclick = openAuth;
-
-document.querySelectorAll("[data-close]").forEach(button => {
-  button.addEventListener("click", () => {
-    button.closest("dialog").close();
-  });
-});
-
-$("#tabIn").onclick = () => {
-  $("#fIn").classList.remove("hide");
-  $("#fUp").classList.add("hide");
-  $("#tabIn").classList.add("p");
-  $("#tabUp").classList.remove("p");
-};
-
-$("#tabUp").onclick = () => {
-  $("#fUp").classList.remove("hide");
-  $("#fIn").classList.add("hide");
-  $("#tabUp").classList.add("p");
-  $("#tabIn").classList.remove("p");
-};
-
-async function login(email, password) {
-  // Never carry one account's visible data into another account.
-  stopLive();
-  clearEvaluationUI();
-  clearLeaderboard();
-
-  const data = await json("/login", {
-    method: "POST",
-    auth: false,
-    body: { email, password }
-  });
-
-  const token = data.token || data.access_token;
-
-  if (!token) {
-    throw new Error("Login response did not include a token.");
-  }
-
-  sessionStorage.setItem("ps_token", token);
-  sessionStorage.setItem("ps_user", JSON.stringify({
-    name: data.name || data.username || email,
-    role: data.role || "user"
-  }));
-
-  paint();
-  route();
-  $("#authDlg").close();
-  clearAuthForms();
-  toast("Signed in successfully.");
+$("#signin").onclick=openAuth; $("#homeIn").onclick=openAuth;
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>b.closest("dialog").close()));
+$("#tabIn").onclick=()=>{$("#fIn").classList.remove("hide");$("#fUp").classList.add("hide");$("#tabIn").classList.add("p");$("#tabUp").classList.remove("p");};
+$("#tabUp").onclick=()=>{$("#fUp").classList.remove("hide");$("#fIn").classList.add("hide");$("#tabUp").classList.add("p");$("#tabIn").classList.remove("p");};
+async function login(email,password) {
+  stopLive(); resetChallenge(); clearEvaluationUI(); clearLeaderboard();
+  const data=await json("/login",{method:"POST",auth:false,body:{email,password}});
+  const token=data.token||data.access_token;
+  if(!token) throw new Error("Login response did not include a token.");
+  sessionStorage.setItem("ps_token",token);
+  sessionStorage.setItem("ps_user",JSON.stringify({name:data.name||data.username||email,role:data.role||"user"}));
+  paint();route();$("#authDlg").close();clearAuthForms();toast("Signed in successfully.");
 }
-
-$("#doIn").onclick = async () => {
-  const button = $("#doIn");
-  button.disabled = true;
-  $("#authMsg").textContent = "";
-
-  try {
-    await login($("#lEmail").value.trim(), $("#lPass").value);
-  } catch (error) {
-    $("#authMsg").textContent = error.message;
-  } finally {
-    button.disabled = false;
-  }
-};
-
-$("#doUp").onclick = async () => {
-  const name = $("#rName").value.trim();
-  const email = $("#rEmail").value.trim();
-  const email2 = $("#rEmail2").value.trim();
-  const password = $("#rPass").value;
-  const password2 = $("#rPass2").value;
-  const message = $("#authMsg");
-
-  if (!name || !email || !email2 || !password || !password2) {
-    message.textContent = "Fill in every field.";
-    return;
-  }
-
-  if (email !== email2) {
-    message.textContent = "The email addresses do not match.";
-    return;
-  }
-
-  if (password.length < 8) {
-    message.textContent = "Use a password of at least 8 characters.";
-    return;
-  }
-
-  if (password !== password2) {
-    message.textContent = "The passwords do not match.";
-    return;
-  }
-
-  const button = $("#doUp");
-  button.disabled = true;
-  message.textContent = "";
-
-  try {
-    await json("/register", {
-      method: "POST",
-      auth: false,
-      body: {
-        name,
-        email,
-        confirm_email: email2,
-        password,
-        confirm_password: password2
-      }
-    });
-
-    await login(email, password);
-  } catch (error) {
-    message.textContent = error.message;
-  } finally {
-    button.disabled = false;
-  }
+$("#doIn").onclick=async()=>{const b=$("#doIn");b.disabled=true;$("#authMsg").textContent="";try{await login($("#lEmail").value.trim(),$("#lPass").value);}catch(e){$("#authMsg").textContent=e.message;}finally{b.disabled=false;}};
+$("#doUp").onclick=async()=>{
+  const name=$("#rName").value.trim(),email=$("#rEmail").value.trim(),email2=$("#rEmail2").value.trim(),password=$("#rPass").value,password2=$("#rPass2").value,m=$("#authMsg");
+  if(!name||!email||!email2||!password||!password2){m.textContent="Fill in every field.";return;}
+  if(email!==email2){m.textContent="The email addresses do not match.";return;}
+  if(password.length<8){m.textContent="Use a password of at least 8 characters.";return;}
+  if(password!==password2){m.textContent="The passwords do not match.";return;}
+  const b=$("#doUp");b.disabled=true;m.textContent="";
+  try{await json("/register",{method:"POST",auth:false,body:{name,email,confirm_email:email2,password,confirm_password:password2}});await login(email,password);}
+  catch(e){m.textContent=e.message;}finally{b.disabled=false;}
 };
 
 /* ---------------- EVALUATION ---------------- */
-
-const promptInput = $("#prompt");
-
-promptInput.addEventListener("input", () => {
-  $("#cnt").textContent = promptInput.value.length + " / 8000";
-});
-
-function setEvalMessage(message, isError = false) {
-  $("#evMsg").textContent = message;
-  $("#evMsg").classList.toggle("err", isError);
-}
-
+const promptInput=$("#prompt");
+promptInput.addEventListener("input",()=>{$("#cnt").textContent=promptInput.value.length+" / 8000";});
+function setEvalMessage(message,isError=false){$("#evMsg").textContent=message;$("#evMsg").classList.toggle("err",isError);}
 function toList(value) {
-  if (Array.isArray(value)) {
-    return value.map(item => {
-      if (typeof item === "string") return item;
-      if (item && typeof item === "object") {
-        return item.description || item.text || item.reason ||
-          JSON.stringify(item);
-      }
-      return String(item);
-    });
-  }
-
-  if (typeof value === "string" && value.trim()) {
-    return [value.trim()];
-  }
-
-  return [];
+  if(Array.isArray(value))return value.map(item=>typeof item==="string"?item:item&&typeof item==="object"?(item.description||item.text||item.reason||JSON.stringify(item)):String(item));
+  if(typeof value==="string"&&value.trim())return[value.trim()];return[];
 }
-
 function numericScore(value) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-
-  if (
-    typeof value === "string" &&
-    value.trim() &&
-    Number.isFinite(Number(value))
-  ) {
-    return Number(value);
-  }
-
+  if(typeof value==="number"&&Number.isFinite(value))return value;
+  if(typeof value==="string"&&value.trim()&&Number.isFinite(Number(value)))return Number(value);
   return null;
 }
-
 function mergeResult(payload) {
-  if (!payload || typeof payload !== "object") return;
-
-  let data = payload;
-
-  if (payload.evaluation && typeof payload.evaluation === "object") {
-    data = { ...payload, ...payload.evaluation };
-  }
-
-  if (payload.result && typeof payload.result === "object") {
-    data = { ...data, ...payload.result };
-  }
-
-  const score = numericScore(
-    data.final_score ?? data.score ??
-    data.overall_score ?? data.total_score
-  );
-
-  if (score !== null && score >= 0 && score <= 10) {
-    current.score = score;
-  }
-
-  if (data.grade != null) current.grade = data.grade;
-
-  current.reason =
-    data.reason ?? data.explanation ?? data.summary ?? "";
-
-  current.improved =
-    data.improved_prompt ?? data.improvedPrompt ??
-    data.rewritten_prompt ?? data.rewrite ?? "";
-
-  const scores =
-    data.scores ?? data.dimension_scores ?? data.breakdown;
-
-  if (scores && typeof scores === "object") current.scores = scores;
-
-  current.strengths = toList(data.strengths ?? data.positive_points);
-  current.weaknesses = toList(data.weaknesses ?? data.areas_to_improve);
+  if(!payload||typeof payload!=="object")return;
+  let data=payload;
+  if(payload.evaluation&&typeof payload.evaluation==="object")data={...payload,...payload.evaluation};
+  if(payload.result&&typeof payload.result==="object")data={...data,...payload.result};
+  const score=numericScore(data.final_score??data.score??data.overall_score??data.total_score);
+  if(score!==null&&score>=0&&score<=10)current.score=score;
+  if(data.grade!=null)current.grade=data.grade;
+  current.reason=data.reason??data.explanation??data.summary??"";
+  current.improved=data.improved_prompt??data.improvedPrompt??data.rewritten_prompt??data.rewrite??"";
+  const scores=data.scores??data.dimension_scores??data.breakdown;
+  if(scores&&typeof scores==="object")current.scores=scores;
+  current.strengths=toList(data.strengths??data.positive_points);current.weaknesses=toList(data.weaknesses??data.areas_to_improve);
 }
-
-function renderList(selector, items) {
-  const list = $(selector);
-  list.replaceChildren();
-
-  items.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = item;
-    list.append(li);
-  });
+function renderList(selector,items) {
+  const list=$(selector);list.replaceChildren();
+  items.forEach(item=>{const li=document.createElement("li");li.textContent=item;list.append(li);});
 }
-
 function renderResult() {
-  const score = numericScore(current.score);
-
-  if (score === null || score < 0 || score > 10) return false;
-
-  $("#empty").classList.add("hide");
-  $("#out").classList.remove("hide");
-
-  $("#num").textContent = score.toFixed(1);
-  $("#arc").style.strokeDashoffset =
-    358.1 * (1 - Math.max(0, Math.min(10, score)) / 10);
-
-  $("#arc").style.stroke =
-    score < 4 ? "var(--er)" :
-    score < 7.5 ? "var(--wn)" : "var(--ok)";
-
-  $("#grade").textContent = current.grade || gradeOf(score);
-  $("#reason").textContent = current.reason || "";
-  $("#improved").textContent = current.improved || "";
-  $("#fixBox").classList.toggle("hide", !current.improved);
-
-  const dimensions = $("#dims");
-  dimensions.replaceChildren();
-
-  const entries = current.scores &&
-    typeof current.scores === "object"
-      ? Object.entries(current.scores)
-      : [];
-
-  entries.forEach(([key, value]) => {
-    const item = document.createElement("div");
-    item.className = "dim";
-
-    const rawScore = value && typeof value === "object"
-      ? (value.score ?? value.value)
-      : value;
-
-    const title = document.createElement("b");
-    title.textContent =
-      key.replaceAll("_", " ") + ": " +
-      (rawScore ?? "n/a") + (rawScore == null ? "" : "/20");
-
-    const note = document.createElement("div");
-    note.textContent = value && typeof value === "object"
-      ? (value.justification ?? value.explanation ?? value.feedback ?? "")
-      : "";
-    note.style.color = "var(--mu)";
-
-    item.append(title, note);
-    dimensions.append(item);
+  const score=numericScore(current.score);if(score===null||score<0||score>10)return false;
+  $("#empty").classList.add("hide");$("#out").classList.remove("hide");$("#num").textContent=score.toFixed(1);
+  $("#arc").style.strokeDashoffset=358.1*(1-Math.max(0,Math.min(10,score))/10);
+  $("#arc").style.stroke=score<4?"var(--er)":score<7.5?"var(--wn)":"var(--ok)";
+  $("#grade").textContent=current.grade||gradeOf(score);$("#reason").textContent=current.reason||"";$("#improved").textContent=current.improved||"";
+  $("#fixBox").classList.toggle("hide",!current.improved);
+  const dimensions=$("#dims");dimensions.replaceChildren();
+  const entries=current.scores&&typeof current.scores==="object"?Object.entries(current.scores):[];
+  entries.forEach(([key,value])=>{
+    const item=document.createElement("div");item.className="dim";
+    const rawScore=value&&typeof value==="object"?(value.score??value.value):value;
+    const title=document.createElement("b");title.textContent=key.replaceAll("_"," ")+": "+(rawScore??"n/a")+(rawScore==null?"":"/20");
+    const note=document.createElement("div");note.textContent=value&&typeof value==="object"?(value.justification??value.explanation??value.feedback??""):"";note.style.color="var(--mu)";
+    item.append(title,note);dimensions.append(item);
   });
-
-  $("#dimBox").classList.toggle("hide", entries.length === 0);
-  renderList("#strengths", current.strengths || []);
-  renderList("#weaknesses", current.weaknesses || []);
-
-  $("#feedbackBox").classList.toggle(
-    "hide",
-    !(current.strengths?.length || current.weaknesses?.length)
-  );
-
-  return true;
+  $("#dimBox").classList.toggle("hide",entries.length===0);renderList("#strengths",current.strengths||[]);renderList("#weaknesses",current.weaknesses||[]);
+  $("#feedbackBox").classList.toggle("hide",!(current.strengths?.length||current.weaknesses?.length));return true;
 }
-
 async function evaluate() {
-  if (!tok()) {
-    openAuth();
-    return;
-  }
-
-  const promptText = promptInput.value.trim();
-
-  if (promptText.length < 10) {
-    setEvalMessage("Enter a prompt with at least a few words.", true);
-    return;
-  }
-
-  current = {};
-  const requestController = new AbortController();
-  controller = requestController;
-
-  $("#go").disabled = true;
-  $("#stop").hidden = false;
-  $("#empty").textContent = "Evaluating your prompt…";
-  $("#empty").classList.remove("hide");
-  $("#out").classList.add("hide");
-
-  setEvalMessage("Sending prompt to the evaluation API…");
-
+  if(!tok()){openAuth();return;}
+  const promptText=promptInput.value.trim();
+  if(promptText.length<10){setEvalMessage("Enter a prompt with at least a few words.",true);return;}
+  if(challenge&&challenge.status==="active"&&challengeEvalInFlight){setEvalMessage("Wait for the current challenge evaluation to finish.",true);return;}
+  current={};
+  const requestController=new AbortController();controller=requestController;
+  const runId=challenge&&challenge.status==="active"?challenge.runId:null;
+  const isChallengeEvaluation=runId!==null;
+  if(isChallengeEvaluation)challengeEvalInFlight=true;
+  $("#go").disabled=true;$("#stop").hidden=false;$("#empty").textContent="Evaluating your prompt…";$("#empty").classList.remove("hide");$("#out").classList.add("hide");
+  setEvalMessage(isChallengeEvaluation?"Challenge running — evaluating your prompt…":"Sending prompt to the evaluation API…");
   try {
-    const data = await json("/rag/evaluate", {
-      method: "POST",
-      body: {
-        prompt: promptText,
-        intended_purpose: $("#purpose").value || "Not specified",
-        task_description: $("#task").value.trim() || "Not specified"
-      },
-      signal: requestController.signal
-    });
-
-    // Do not display a late response after logout or a session change.
-    if (requestController !== controller || !tok()) return;
-
-    if (data.success === false) {
-      throw new Error(data.detail || data.message || "Evaluation failed.");
-    }
-
+    const data=await json("/rag/evaluate",{method:"POST",body:{prompt:promptText,intended_purpose:$("#purpose").value||"Not specified",task_description:$("#task").value.trim()||"Not specified"},signal:requestController.signal});
+    if(requestController!==controller||!tok())return;
+    if(data.success===false)throw new Error(data.detail||data.message||"Evaluation failed.");
     mergeResult(data);
-
-    if (!renderResult()) {
-      throw new Error("The API response did not contain a valid score from 0 to 10.");
-    }
-
+    if(!renderResult())throw new Error("The API response did not contain a valid score from 0 to 10.");
     setEvalMessage("Evaluation completed successfully.");
-  } catch (error) {
-    if (error.name === "AbortError") {
-      setEvalMessage("Evaluation cancelled.");
-    } else if (requestController === controller && tok()) {
-      setEvalMessage(error.message || "Evaluation failed.", true);
-      $("#empty").textContent = "No score received. Check the error above and try again.";
-      $("#empty").classList.remove("hide");
-      $("#out").classList.add("hide");
+    if(isChallengeEvaluation)recordChallengeScore(current.score,runId);
+  } catch(error) {
+    if(error.name==="AbortError")setEvalMessage("Evaluation cancelled.");
+    else if(requestController===controller&&tok()){
+      setEvalMessage(error.message||"Evaluation failed.",true);$("#empty").textContent="No score received. Check the error above and try again.";$("#empty").classList.remove("hide");$("#out").classList.add("hide");
     }
   } finally {
-    if (requestController === controller) {
-      controller = null;
-      $("#go").disabled = false;
-      $("#stop").hidden = true;
-    }
+    if(isChallengeEvaluation)challengeEvalInFlight=false;
+    if(requestController===controller){controller=null;$("#go").disabled=false;$("#stop").hidden=true;}
   }
 }
-
-$("#go").onclick = evaluate;
-$("#stop").onclick = () => {
-  if (controller) controller.abort();
-};
-
-$("#copy").onclick = async () => {
-  const text = $("#improved").textContent;
-
-  if (!text) {
-    toast("There is no improved prompt to copy.", true);
-    return;
-  }
-
-  try {
-    await navigator.clipboard.writeText(text);
-    toast("Copied improved prompt.");
-  } catch {
-    toast("Copy failed. Select and copy the text manually.", true);
-  }
-};
-
-$("#reuse").onclick = () => {
-  const text = $("#improved").textContent.trim();
-
-  if (!text) {
-    toast("No improved prompt is available.", true);
-    return;
-  }
-
-  promptInput.value = text;
-  promptInput.dispatchEvent(new Event("input"));
-  location.hash = "#evaluate";
-  promptInput.focus();
-};
+$("#go").onclick=evaluate;
+$("#stop").onclick=()=>{if(controller)controller.abort();};
+$("#copy").onclick=async()=>{const text=$("#improved").textContent;if(!text){toast("There is no improved prompt to copy.",true);return;}try{await navigator.clipboard.writeText(text);toast("Copied improved prompt.");}catch{toast("Copy failed. Select and copy the text manually.",true);}};
+$("#reuse").onclick=()=>{const text=$("#improved").textContent.trim();if(!text){toast("No improved prompt is available.",true);return;}promptInput.value=text;promptInput.dispatchEvent(new Event("input"));location.hash="#evaluate";promptInput.focus();};
 
 /* ---------------- LEADERBOARD ---------------- */
-
-const columns = {
-  users: [
-    ["Rank", "rank"],
-    ["User", "username"],
-    ["Best score", "best_score"],
-    ["Average", "average_score"],
-    ["Prompts scored", "total_evaluations"]
-  ],
-  prompts: [
-    ["Rank", "rank"],
-    ["User", "username"],
-    ["Prompt", "prompt"],
-    ["Score", "score"],
-    ["Grade", "grade"]
-  ]
-};
-
+const columns={users:[["Rank","rank"],["User","username"],["Best score","best_score"],["Average","average_score"],["Prompts scored","total_evaluations"]],prompts:[["Rank","rank"],["User","username"],["Prompt","prompt"],["Score","score"],["Grade","grade"]]};
 function renderTable(rows) {
-  const wrapper = $("#tbl");
-  wrapper.replaceChildren();
-
-  if (!Array.isArray(rows) || !rows.length) {
-    wrapper.textContent = "No entries yet. Score a prompt to get on the board.";
-    return;
-  }
-
-  const table = document.createElement("table");
-  const head = table.createTHead().insertRow();
-
-  columns[leaderboardType].forEach(([label]) => {
-    const th = document.createElement("th");
-    th.textContent = label;
-    head.append(th);
-  });
-
-  const body = table.createTBody();
-
-  rows.forEach((row, index) => {
-    const tr = body.insertRow();
-
-    columns[leaderboardType].forEach(([, key]) => {
-      const td = tr.insertCell();
-      if (key === "prompt") td.className = "pr";
-
-      const value = row[key];
-      td.textContent = value == null
-        ? (key === "rank" ? String(index + 1) : "–")
-        : String(value);
-    });
-  });
-
+  const wrapper=$("#tbl");wrapper.replaceChildren();
+  if(!Array.isArray(rows)||!rows.length){wrapper.textContent="No entries yet. Score a prompt to get on the board.";return;}
+  const table=document.createElement("table"),head=table.createTHead().insertRow();
+  columns[leaderboardType].forEach(([label])=>{const th=document.createElement("th");th.textContent=label;head.append(th);});
+  const body=table.createTBody();
+  rows.forEach((row,index)=>{const tr=body.insertRow();columns[leaderboardType].forEach(([,key])=>{const td=tr.insertCell();if(key==="prompt")td.className="pr";const value=row[key];td.textContent=value==null?(key==="rank"?String(index+1):"–"):String(value);});});
   wrapper.append(table);
 }
-
 async function loadBoard() {
-  if (!tok()) {
-    $("#lbMsg").textContent = "Sign in to view the leaderboard.";
-    $("#tbl").replaceChildren();
-    return;
-  }
-
-  const tokenAtRequest = tok();
-  $("#lbMsg").textContent = "Loading…";
-
-  try {
-    const data = await json("/leaderboard/" + leaderboardType);
-
-    // Ignore responses belonging to a session that has ended or changed.
-    if (!tok() || tok() !== tokenAtRequest) return;
-
-    renderTable(
-      data[leaderboardType] || data.results || data.items || []
-    );
-
-    $("#lbMsg").textContent = "";
-  } catch (error) {
-    if (tok() === tokenAtRequest) {
-      $("#lbMsg").textContent = error.message;
-    }
-  }
+  if(!tok()){$("#lbMsg").textContent="Sign in to view the leaderboard.";$("#tbl").replaceChildren();return;}
+  const tokenAtRequest=tok();$("#lbMsg").textContent="Loading…";
+  try{const data=await json("/leaderboard/"+leaderboardType);if(!tok()||tok()!==tokenAtRequest)return;renderTable(data[leaderboardType]||data.results||data.items||[]);$("#lbMsg").textContent="";}
+  catch(error){if(tok()===tokenAtRequest)$("#lbMsg").textContent=error.message;}
 }
-
-function chooseBoard(type) {
-  leaderboardType = type;
-
-  $("#tUsers").setAttribute("aria-pressed", type === "users");
-  $("#tPrompts").setAttribute("aria-pressed", type === "prompts");
-
-  $("#tbl").replaceChildren();
-  loadBoard();
-}
-
-$("#tUsers").onclick = () => chooseBoard("users");
-$("#tPrompts").onclick = () => chooseBoard("prompts");
-$("#refresh").onclick = loadBoard;
-
-function setLive(enabled) {
-  $("#dot").classList.toggle("on", enabled);
-  $("#liveTxt").textContent = enabled ? "Live" : "Not live";
-  $("#live").textContent = enabled ? "Stop live" : "Go live";
-}
-
-$("#live").onclick = () => {
-  if (socket) {
-    stopLive();
-    return;
-  }
-
-  if (!tok()) {
-    openAuth();
-    return;
-  }
-
-  const tokenAtConnect = tok();
-  const url = new URL(API());
-  const wsProtocol = url.protocol === "https:" ? "wss:" : "ws:";
-
-  socket = new WebSocket(
-    wsProtocol + "//" + url.host +
-    "/leaderboard/live?token=" + encodeURIComponent(tokenAtConnect)
-  );
-
-  socket.onopen = () => {
-    if (socket && tok() === tokenAtConnect) setLive(true);
-  };
-
-  socket.onmessage = event => {
-    if (!tok() || tok() !== tokenAtConnect) return;
-
-    try {
-      const data = JSON.parse(event.data);
-      if (data[leaderboardType]) renderTable(data[leaderboardType]);
-    } catch {}
-  };
-
-  socket.onerror = () => {
-    toast("Live updates failed. Check the WebSocket endpoint.", true);
-  };
-
-  socket.onclose = () => {
-    socket = null;
-    setLive(false);
-  };
+function chooseBoard(type){leaderboardType=type;$("#tUsers").setAttribute("aria-pressed",type==="users");$("#tPrompts").setAttribute("aria-pressed",type==="prompts");$("#tbl").replaceChildren();loadBoard();}
+$("#tUsers").onclick=()=>chooseBoard("users");$("#tPrompts").onclick=()=>chooseBoard("prompts");$("#refresh").onclick=loadBoard;
+function setLive(enabled){$("#dot").classList.toggle("on",enabled);$("#liveTxt").textContent=enabled?"Live":"Not live";$("#live").textContent=enabled?"Stop live":"Go live";}
+$("#live").onclick=()=>{
+  if(socket){stopLive();return;}if(!tok()){openAuth();return;}
+  const tokenAtConnect=tok(),url=new URL(API()),wsProtocol=url.protocol==="https:"?"wss:":"ws:";
+  socket=new WebSocket(wsProtocol+"//"+url.host+"/leaderboard/live?token="+encodeURIComponent(tokenAtConnect));
+  socket.onopen=()=>{if(socket&&tok()===tokenAtConnect)setLive(true);};
+  socket.onmessage=event=>{if(!tok()||tok()!==tokenAtConnect)return;try{const data=JSON.parse(event.data);if(data[leaderboardType])renderTable(data[leaderboardType]);}catch{}};
+  socket.onerror=()=>toast("Live updates failed. Check the WebSocket endpoint.",true);
+  socket.onclose=()=>{socket=null;setLive(false);};
 };
 
 /* ---------------- HERO MOTION ---------------- */
-
-const scene = $("#scene");
-
-if (scene && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  $("#v-home").addEventListener("pointermove", event => {
-    const rect = $("#v-home").getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-
-    scene.style.setProperty("--rx", (56 - y * 14) + "deg");
-    scene.style.setProperty("--rz", (-34 + x * 24) + "deg");
-  });
+const scene=$("#scene");
+if(scene&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+  $("#v-home").addEventListener("pointermove",event=>{const rect=$("#v-home").getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;scene.style.setProperty("--rx",(56-y*14)+"deg");scene.style.setProperty("--rz",(-34+x*24)+"deg");});
 }
 
 /* ---------------- INITIALIZE ---------------- */
-
-window.addEventListener("hashchange", route);
-
-// Clear any stale protected page from a previous browser session.
-paint();
-route();
-
+window.addEventListener("hashchange",route);
+paint();route();
 })();
-
 </script>
 </body>
 </html>
