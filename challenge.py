@@ -1,3 +1,4 @@
+
 import logging
 import os
 import smtplib
@@ -8,6 +9,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
+from pymongo.errors import PyMongoError
 
 from authservice.db import evaluation
 from authservice.security import get_current_user
@@ -19,7 +21,7 @@ router = APIRouter(
     tags=["Challenges"],
 )
 
-# Store challenge data separately from prompt evaluations.
+# Motor collection: all database operations below are asynchronous.
 challenge_records = evaluation.database["challenge_records"]
 
 
@@ -50,10 +52,8 @@ class ChallengeSubmission(BaseModel):
     @classmethod
     def validate_text(cls, value):
         value = value.strip()
-
         if not value:
             raise ValueError("This field cannot be empty.")
-
         return value
 
 
@@ -67,22 +67,20 @@ def send_high_score_email(record: dict) -> bool:
     smtp_user = os.getenv("SMTP_USER", "").strip()
     smtp_password = os.getenv("SMTP_PASSWORD", "")
     smtp_from = os.getenv("SMTP_FROM", smtp_user).strip()
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
 
-    if not all([
-        recipient,
-        smtp_host,
-        smtp_user,
-        smtp_password,
-        smtp_from,
-    ]):
-        logger.warning("SMTP is not configured.")
+    try:
+        smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    except ValueError:
+        logger.exception("SMTP_PORT must be a valid integer.")
+        return False
+
+    if not all((recipient, smtp_host, smtp_user, smtp_password, smtp_from)):
+        logger.warning("SMTP is not configured; skipping notification.")
         return False
 
     message = EmailMessage()
     message["Subject"] = (
-        f"PromptScore AI: New Personal Best - "
-        f"{record['name']}"
+        f"PromptScore AI: New Personal Best - {record['name']}"
     )
     message["From"] = smtp_from
     message["To"] = recipient
@@ -102,17 +100,12 @@ def send_high_score_email(record: dict) -> bool:
     )
 
     try:
-        with smtplib.SMTP(
-            smtp_host,
-            smtp_port,
-            timeout=15,
-        ) as server:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
             server.login(smtp_user, smtp_password)
             server.send_message(message)
-
         return True
 
     except Exception:
@@ -125,7 +118,7 @@ def send_high_score_email(record: dict) -> bool:
 # --------------------------------------------------
 
 @router.post("/submit")
-def submit_challenge(
+async def submit_challenge(
     payload: ChallengeSubmission,
     current_user=Depends(get_current_user),
 ):
@@ -134,15 +127,12 @@ def submit_challenge(
 
     if payload.challenge_type == "speed_prompt":
         score_for_record = max(scores)
-
         won = (
             score_for_record >= 8.0
             and payload.elapsed_seconds <= 60
         )
-
     else:
         score_for_record = average_score
-
         won = (
             len(scores) >= 2
             and average_score >= 9.0
@@ -151,7 +141,6 @@ def submit_challenge(
 
     now = datetime.now(timezone.utc)
 
-    # Identify the student's record for this challenge.
     identity = {
         "roll_no_normalized": payload.roll_no.casefold(),
         "class_normalized": payload.class_name.casefold(),
@@ -159,78 +148,106 @@ def submit_challenge(
         "challenge_type": payload.challenge_type,
     }
 
-    previous = challenge_records.find_one(identity)
+    try:
+        previous = await challenge_records.find_one(identity)
 
-    previous_best = (
-        float(previous.get("best_score", -1))
-        if previous
-        else -1.0
-    )
+        previous_best = (
+            float(previous.get("best_score", -1))
+            if previous
+            else -1.0
+        )
+        is_new_personal_best = score_for_record > previous_best
 
-    is_new_personal_best = score_for_record > previous_best
+        if previous:
+            update_fields = {
+                "name": payload.name,
+                "roll_no": payload.roll_no,
+                "class_name": payload.class_name,
+                "section": payload.section,
+                "challenge_title": payload.challenge_title,
+                "last_score": round(score_for_record, 2),
+                "last_average_score": round(average_score, 2),
+                "last_scores": scores,
+                "last_won": won,
+                "last_elapsed_seconds": payload.elapsed_seconds,
+                "updated_at": now,
+            }
 
-    if previous:
-        update_fields = {
-            "name": payload.name,
-            "roll_no": payload.roll_no,
-            "class_name": payload.class_name,
-            "section": payload.section,
-            "challenge_title": payload.challenge_title,
-            "last_score": round(score_for_record, 2),
-            "last_average_score": round(average_score, 2),
-            "last_scores": scores,
-            "last_won": won,
-            "last_elapsed_seconds": payload.elapsed_seconds,
-            "updated_at": now,
-        }
+            if is_new_personal_best:
+                update_fields.update({
+                    "best_score": round(score_for_record, 2),
+                    "best_scores": scores,
+                    "best_average_score": round(average_score, 2),
+                    "best_won": won,
+                })
 
-        if is_new_personal_best:
-            update_fields.update({
+            await challenge_records.update_one(
+                identity,
+                {
+                    "$set": update_fields,
+                    "$inc": {"attempts": 1},
+                },
+            )
+
+            record = await challenge_records.find_one(identity)
+
+            if record is None:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Challenge record could not be retrieved after update.",
+                )
+
+        else:
+            record = {
+                **identity,
+                "name": payload.name,
+                "roll_no": payload.roll_no,
+                "class_name": payload.class_name,
+                "section": payload.section,
+                "challenge_type": payload.challenge_type,
+                "challenge_title": payload.challenge_title,
                 "best_score": round(score_for_record, 2),
                 "best_scores": scores,
                 "best_average_score": round(average_score, 2),
                 "best_won": won,
-            })
+                "last_score": round(score_for_record, 2),
+                "last_average_score": round(average_score, 2),
+                "last_scores": scores,
+                "last_won": won,
+                "last_elapsed_seconds": payload.elapsed_seconds,
+                "attempts": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
 
-        challenge_records.update_one(
-            identity,
-            {
-                "$set": update_fields,
-                "$inc": {"attempts": 1},
-            },
+            await challenge_records.insert_one(record)
+
+    except HTTPException:
+        raise
+    except PyMongoError:
+        logger.exception("MongoDB error while saving challenge result.")
+        raise HTTPException(
+            status_code=500,
+            detail="Database error while saving challenge result.",
         )
-
-        record = challenge_records.find_one(identity)
-
-    else:
-        record = {
-            **identity,
-            "name": payload.name,
-            "roll_no": payload.roll_no,
-            "class_name": payload.class_name,
-            "section": payload.section,
-            "challenge_type": payload.challenge_type,
-            "challenge_title": payload.challenge_title,
-            "best_score": round(score_for_record, 2),
-            "best_scores": scores,
-            "best_average_score": round(average_score, 2),
-            "best_won": won,
-            "last_score": round(score_for_record, 2),
-            "last_average_score": round(average_score, 2),
-            "last_scores": scores,
-            "last_won": won,
-            "last_elapsed_seconds": payload.elapsed_seconds,
-            "attempts": 1,
-            "created_at": now,
-            "updated_at": now,
-        }
-
-        challenge_records.insert_one(record)
+    except Exception:
+        logger.exception("Unexpected error while saving challenge result.")
+        raise HTTPException(
+            status_code=500,
+            detail="Unexpected error while saving challenge result.",
+        )
 
     email_sent = False
 
     if is_new_personal_best:
-        email_sent = send_high_score_email(record)
+        # SMTP is synchronous; run it in a thread so it doesn't block
+        # the async event loop.
+        import asyncio
+        from functools import partial
+
+        email_sent = await asyncio.to_thread(
+            partial(send_high_score_email, record)
+        )
 
     return {
         "ok": True,
@@ -250,31 +267,40 @@ def submit_challenge(
 # --------------------------------------------------
 
 @router.get("/leaderboard")
-def challenge_leaderboard(
+async def challenge_leaderboard(
     current_user=Depends(get_current_user),
 ):
-    rows = (
-        challenge_records.find(
-            {},
-            {
-                "_id": 0,
-                "name": 1,
-                "roll_no": 1,
-                "class_name": 1,
-                "section": 1,
-                "challenge_type": 1,
-                "challenge_title": 1,
-                "best_score": 1,
-                "best_average_score": 1,
-                "attempts": 1,
-                "best_won": 1,
-            },
+    try:
+        cursor = (
+            challenge_records.find(
+                {},
+                {
+                    "_id": 0,
+                    "name": 1,
+                    "roll_no": 1,
+                    "class_name": 1,
+                    "section": 1,
+                    "challenge_type": 1,
+                    "challenge_title": 1,
+                    "best_score": 1,
+                    "best_average_score": 1,
+                    "attempts": 1,
+                    "best_won": 1,
+                },
+            )
+            .sort([
+                ("best_score", -1),
+                ("best_average_score", -1),
+            ])
+            .limit(100)
         )
-        .sort([
-            ("best_score", -1),
-            ("best_average_score", -1),
-        ])
-        .limit(100)
-    )
 
-    return {"results": list(rows)}
+        rows = await cursor.to_list(length=100)
+        return {"results": rows}
+
+    except PyMongoError:
+        logger.exception("MongoDB error while loading challenge leaderboard.")
+        raise HTTPException(
+            status_code=500,
+            detail="Database error while loading challenge leaderboard.",
+        )
