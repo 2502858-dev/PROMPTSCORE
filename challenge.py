@@ -267,9 +267,7 @@ async def submit_challenge(
 # --------------------------------------------------
 
 @router.get("/leaderboard")
-async def challenge_leaderboard(
-    current_user=Depends(get_current_user),
-):
+async def challenge_leaderboard():
     try:
         cursor = (
             challenge_records.find(
