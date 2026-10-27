@@ -1,7 +1,7 @@
 import nltk_setup
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from challenge import router as challenge_router
 from authservice.routes import app as auth_router
 from leaderbor.api2 import router as leaderbor_router
 from leaderbor.api1 import app as leaderbor_api_router
@@ -17,6 +17,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(leaderbor_api_router)
 app.include_router(leaderbor_router)
+app.include_router(challenge_router)
 
 
 @app.get("/health")

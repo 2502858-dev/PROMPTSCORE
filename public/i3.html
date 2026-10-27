@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptScore AI</title>
+<style>
+:root{--bg:#020d27;--panel:#061b3c;--panel2:#08244b;--blue:#0787ff;--cyan:#22c8ff;--text:#f4f8ff;--muted:#b7d6f4;--line:#075a9c;--good:#39d69a;--danger:#ff647c}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}button,input,textarea,select{font:inherit}button,a{cursor:pointer}a{color:inherit;text-decoration:none}.navbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 4%;background:rgba(1,13,38,.97);border-bottom:1px solid #123d70;backdrop-filter:blur(12px)}.brand{font-size:clamp(19px,2.1vw,30px);font-weight:850;white-space:nowrap}.brand span{color:#39aaff}.navlinks{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.6vw,38px);flex-wrap:wrap}.navlinks a{padding:12px 4px;color:#d4eaff;font-weight:650;border-bottom:2px solid transparent}.navlinks a:hover,.navlinks a.active{color:#fff;border-color:var(--blue)}.autharea{display:flex;align-items:center;gap:12px;color:var(--muted);white-space:nowrap}.btn{border:1px solid transparent;border-radius:15px;padding:13px 20px;background:var(--blue);color:white;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:9px;transition:.2s}.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}.btn.secondary{background:transparent;border-color:#079fff}.btn.ghost{background:#10294a;border-color:#234c78}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.page{min-height:70vh}.hero{min-height:550px;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;background:radial-gradient(ellipse at 75% 35%,#063b87 0%,#03173a 43%,#020d27 75%);border-bottom:1px solid #123d70}.hero-copy{padding:clamp(30px,5vw,78px) clamp(24px,5vw,78px);align-self:center}.eyebrow{font-weight:800;color:var(--cyan);font-size:clamp(15px,1.5vw,21px);margin-bottom:18px}.hero h1{font-size:clamp(38px,5vw,72px);line-height:1.02;letter-spacing:-2px;margin:0 0 22px;font-weight:900}.gradient{color:#24aaff}.hero p{font-size:clamp(16px,1.35vw,20px);line-height:1.65;color:#c1e0ff;max-width:650px}.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0}.logos{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:35px;color:#b6d8f9;font-size:13px}.logo-chip{border:1px solid #15558c;background:#071a36;border-radius:10px;padding:9px 12px}.hero-visual{position:relative;min-height:400px;overflow:hidden;display:flex;align-items:center;justify-content:center}.hero-visual img{width:100%;height:100%;min-height:400px;max-height:680px;object-fit:cover;object-position:center;display:block;mask-image:linear-gradient(to right,transparent 0%,black 14%)}.image-fallback{padding:40px;text-align:center;color:#9bcdf8}.features{padding:24px 4% 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.feature,.panel,.card{border:1px solid #075a9c;background:linear-gradient(145deg,#061b3c,#03142f);border-radius:16px;padding:22px}.feature{display:flex;gap:15px;align-items:flex-start}.feature-icon{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;background:#087df1;font-size:23px}.feature h3{margin:4px 0 10px}.feature p,.muted{color:var(--muted);line-height:1.55}.footer{text-align:center;padding:25px;color:#b9d8f8}.footer span{color:var(--cyan)}.content{max-width:1100px;margin:0 auto;padding:38px 22px 60px}.section-head{margin-bottom:25px}.section-head h1{font-size:clamp(30px,4vw,46px);margin:0 0 10px}.section-head p{color:var(--muted);margin:0;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.form-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}label{display:block;margin:14px 0 7px;color:#d5eaff;font-weight:650}input,textarea,select{width:100%;padding:13px 14px;background:#020f29;color:white;border:1px solid #24517e;border-radius:10px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #12a5ff20}textarea{min-height:170px;resize:vertical;line-height:1.5}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.stack{display:grid;gap:14px}.status{margin-top:14px;padding:12px 14px;border-radius:10px;background:#09274b;color:#d8edff;white-space:pre-wrap;line-height:1.5}.status.error{border:1px solid #a83a52;color:#ffd7df}.status.success{border:1px solid #177c5a;color:#c7ffe9}.hidden{display:none!important}.score{font-size:58px;font-weight:900;color:var(--cyan)}.timer{font-variant-numeric:tabular-nums;font-size:25px;font-weight:850;padding:12px 18px;border-radius:12px;background:#0a2850;border:1px solid #1474b7}.timer.urgent{color:#ff7a8c;border-color:#ff647c}.pill{display:inline-flex;border:1px solid #17649e;border-radius:999px;padding:7px 11px;color:#bfe3ff;font-size:13px}.challenge-card h2{margin-top:0}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px;border-bottom:1px solid #153b62;white-space:nowrap}th{color:#83d5ff}.countdown-overlay{position:fixed;inset:0;z-index:30;background:#01091bee;display:grid;place-items:center;text-align:center}.countdown-number{font-size:clamp(75px,20vw,180px);font-weight:950;color:var(--cyan);text-shadow:0 0 40px #0787ff88}.countdown-caption{font-size:20px;color:#d8ecff}.small{font-size:13px}.right{margin-left:auto}
+@media(max-width:900px){.navbar{flex-wrap:wrap}.navlinks{order:3;width:100%;gap:18px}.hero{grid-template-columns:1fr}.hero-visual{min-height:300px;max-height:440px}.hero-visual img{min-height:300px;mask-image:linear-gradient(to bottom,transparent 0%,black 12%)}.features{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.autharea{margin-left:auto}.navlinks{justify-content:space-between;gap:8px}.navlinks a{font-size:14px}.hero-copy{padding:34px 22px}.hero h1{letter-spacing:-1px}.features,.grid,.form-row{grid-template-columns:1fr}.feature{padding:17px}.hero-visual{min-height:250px}.hero-visual img{min-height:250px}.btn{padding:12px 15px}}
+
+
+:root {
+  --bg: #020d27;
+  --panel: #061b3c;
+  --panel2: #08244b;
+  --blue: #0787ff;
+  --cyan: #22c8ff;
+  --text: #f4f8ff;
+  --muted: #b7d6f4;
+  --line: #075a9c;
+  --good: #39d69a;
+  --danger: #ff647c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+main {
+  flex: 1;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ================= NAVIGATION ================= */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 4%;
+  background: rgba(1, 13, 38, .97);
+  border-bottom: 1px solid #123d70;
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  font-size: clamp(19px, 2.1vw, 30px);
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.brand span {
+  color: #39aaff;
+}
+
+.navlinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2.6vw, 38px);
+  flex-wrap: wrap;
+}
+
+.navlinks a {
+  padding: 12px 4px;
+  color: #d4eaff;
+  font-weight: 650;
+  border-bottom: 2px solid transparent;
+  transition: .2s;
+}
+
+.navlinks a:hover,
+.navlinks a.active {
+  color: #fff;
+  border-color: var(--blue);
+}
+
+.autharea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px 20px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: var(--blue);
+  color: white;
+  font-weight: 750;
+  transition: .2s;
+}
+
+.btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.btn.secondary {
+  background: transparent;
+  border-color: #079fff;
+}
+
+.btn.ghost {
+  background: #10294a;
+  border-color: #234c78;
+}
+
+.btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ================= PAGE LAYOUT ================= */
+
+.page {
+  min-height: 70vh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 38px 22px 60px;
+}
+
+.section-head {
+  margin-bottom: 25px;
+}
+
+.section-head h1 {
+  margin: 0 0 10px;
+  font-size: clamp(30px, 4vw, 46px);
+}
+
+.section-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ================= HOMEPAGE HERO ================= */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(16px, 3vw, 48px);
+  min-height: 0;
+  padding: clamp(24px, 4vw, 56px) 4%;
+  background:
+    radial-gradient(
+      ellipse at 75% 35%,
+      #063b87 0%,
+      #03173a 43%,
+      #020d27 75%
+    );
+  border-bottom: 1px solid #123d70;
+}
+
+.hero-copy {
+  align-self: center;
+  max-width: 680px;
+  padding: 0;
+}
+
+.eyebrow {
+  margin-bottom: 18px;
+  color: var(--cyan);
+  font-size: clamp(15px, 1.5vw, 21px);
+  font-weight: 800;
+}
+
+.hero h1 {
+  margin: 0 0 22px;
+  font-size: clamp(34px, 4.2vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -2px;
+  font-weight: 900;
+}
+
+.gradient {
+  color: #24aaff;
+}
+
+.hero p {
+  max-width: 650px;
+  color: #c1e0ff;
+  font-size: clamp(16px, 1.35vw, 20px);
+  line-height: 1.65;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 26px 0;
+}
+
+.logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 35px;
+  color: #b6d8f9;
+  font-size: 13px;
+}
+
+.logo-chip {
+  padding: 9px 12px;
+  border: 1px solid #15558c;
+  border-radius: 10px;
+  background: #071a36;
+}
+
+/* ================= HERO CAROUSEL ================= */
+
+/* Landscape frame: avoids an excessively tall portrait display */
+.hero-visual {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+}
+
+#heroCarousel {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 10;
+  max-height: 65vh;
+  overflow: hidden;
+  border: 1px solid #0b5a9c;
+  border-radius: 16px;
+  background: #020d27;
+  box-shadow: 0 20px 50px rgba(2, 13, 39, .5);
+  isolation: isolate;
+}
+
+/* All images sit horizontally; JavaScript moves the track */
+#heroCarousel .carousel-track {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  transition: transform .45s ease-in-out;
+  will-change: transform;
+}
+
+/* Each image occupies exactly one slide */
+#heroCarousel .carousel-track img {
+  display: block;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+  background: #020d27;
+  mask-image: none;
+}
+
+/* Previous / next arrows */
+#heroCarousel .carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid #ffffff55;
+  border-radius: 50%;
+  background: rgba(2, 13, 39, .78);
+  color: #fff;
+  font-size: 19px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+#heroCarousel .carousel-arrow:hover {
+  background: var(--blue);
+}
+
+#heroCarousel .carousel-arrow.prev {
+  left: 12px;
+}
+
+#heroCarousel .carousel-arrow.next {
+  right: 12px;
+}
+
+/* Navigation dots */
+#heroCarousel .carousel-dots {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateX(-50%);
+}
+
+#heroCarousel .carousel-dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+  cursor: pointer;
+}
+
+#heroCarousel .carousel-dots button.active {
+  background: var(--cyan);
+  transform: scale(1.25);
+}
+
+/* Slide counter */
+#heroCarousel .slide-counter {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 6;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(2, 13, 39, .85);
+  color: #fff;
+  font-size: 13px;
+}
+
+/* ================= FEATURE CARDS ================= */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px 4% 32px;
+}
+
+.feature,
+.panel,
+.card {
+  padding: 22px;
+  border: 1px solid #075a9c;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #061b3c, #03142f);
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.feature-icon {
+  display: grid;
+  flex: 0 0 48px;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #087df1;
+  font-size: 23px;
+}
+
+.feature h3 {
+  margin: 2px 0 6px;
+  font-size: 18px;
+}
+
+.feature p,
+.muted {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ================= FORMS ================= */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+label {
+  display: block;
+  margin: 14px 0 7px;
+  color: #d5eaff;
+  font-weight: 650;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #24517e;
+  border-radius: 10px;
+  outline: none;
+  background: #020f29;
+  color: white;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px #12a5ff20;
+}
+
+textarea {
+  min-height: 170px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.stack {
+  display: grid;
+  gap: 14px;
+}
+
+.right {
+  margin-left: auto;
+}
+
+/* ================= STATUS MESSAGES ================= */
+
+.status {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #09274b;
+  color: #d8edff;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.status.error {
+  border: 1px solid #a83a52;
+  color: #ffd7df;
+}
+
+.status.success {
+  border: 1px solid #177c5a;
+  color: #c7ffe9;
+}
+
+/* ================= EVALUATION RESULTS ================= */
+
+.score {
+  color: var(--cyan);
+  font-size: 58px;
+  font-weight: 900;
+}
+
+.pill {
+  display: inline-flex;
+  padding: 7px 11px;
+  border: 1px solid #17649e;
+  border-radius: 999px;
+  color: #bfe3ff;
+  font-size: 13px;
+}
+
+/* ================= CHALLENGE TIMER ================= */
+
+.timer {
+  padding: 12px 18px;
+  border: 1px solid #1474b7;
+  border-radius: 12px;
+  background: #0a2850;
+  font-size: 25px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer.urgent {
+  border-color: var(--danger);
+  color: #ff7a8c;
+}
+
+.challenge-card h2 {
+  margin-top: 0;
+}
+
+.countdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: #01091bee;
+  text-align: center;
+}
+
+.countdown-number {
+  color: var(--cyan);
+  font-size: clamp(75px, 20vw, 180px);
+  font-weight: 950;
+  text-shadow: 0 0 40px #0787ff88;
+}
+
+.countdown-caption {
+  color: #d8ecff;
+  font-size: 20px;
+}
+
+.small {
+  font-size: 13px;
+}
+
+/* ================= LEADERBOARD ================= */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px;
+  border-bottom: 1px solid #153b62;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  color: #83d5ff;
+}
+
+/* ================= FOOTER ================= */
+
+.footer {
+  margin-top: auto;
+  padding: 25px;
+  color: #b9d8f8;
+  text-align: center;
+}
+
+.footer span {
+  color: var(--cyan);
+}
+
+/* ================= TABLETS ================= */
+
+@media (max-width: 900px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .navlinks {
+    order: 3;
+    width: 100%;
+    gap: 18px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-copy {
+    max-width: none;
+  }
+
+  .hero-visual {
+    width: 100%;
+  }
+
+  #heroCarousel {
+    max-width: 680px;
+    max-height: 60vh;
+  }
+
+  .features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 560px) {
+  .navbar {
+    gap: 10px;
+    padding: 12px 4%;
+  }
+
+  .autharea {
+    margin-left: auto;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .navlinks {
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .navlinks a {
+    font-size: 14px;
+  }
+
+  .hero {
+    gap: 24px;
+    padding: 30px 20px;
+  }
+
+  .hero-copy {
+    padding: 0;
+  }
+
+  .hero h1 {
+    font-size: clamp(34px, 9vw, 46px);
+    letter-spacing: -1px;
+  }
+
+  .hero-actions {
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 12px 15px;
+  }
+
+  #heroCarousel {
+    width: 100%;
+    max-height: 55vh;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+  }
+
+  #heroCarousel .carousel-arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  #heroCarousel .carousel-dots {
+    bottom: 10px;
+    gap: 7px;
+  }
+
+  #heroCarousel .carousel-dots button {
+    width: 8px;
+    height: 8px;
+  }
+
+  .features,
+  .grid,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .features {
+    padding: 18px 20px 24px;
+  }
+
+  .feature,
+  .panel,
+  .card {
+    padding: 17px;
+  }
+
+  .content {
+    padding: 28px 16px 42px;
+  }
+
+  .score {
+    font-size: 48px;
+  }
+}
+main { width: 100%; }
+#home {
+  display: flex;               /* the .hidden class still hides it (it uses !important) */
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 150px);
+}
+#home .hero { flex: 1; align-items: center; }
+#home .features { width: 100%; margin-top: auto; }
+ 
+/* 2. Larger carousel, so the right half of the hero is used */
+#heroCarousel {
+  max-width: min(100%, 840px);
+  max-height: 68vh;
+}
+ 
+/* 3. Photos that do not match the frame (tall posters) get a blurred copy of
+      themselves as the backdrop, instead of empty dark bars */
+#heroCarousel .slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #020d27;
+}
+#heroCarousel .slide::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  background: var(--img) center / cover no-repeat;
+  filter: blur(24px) brightness(.6);
+}
+#heroCarousel .slide img {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  object-fit: contain;
+  background: transparent;
+}
+ 
+/* 4. Phones: no forced page height, so nothing stretches */
+@media (max-width: 900px) {
+  #home { min-height: 0; }
+}
+
+
+</style>
+</head>
+
+<body>
+<header class="navbar">
+  <a class="brand" href="#home" data-page="home">🧠 Prompt<span>Score AI</span></a>
+  <nav class="navlinks" aria-label="Main navigation">
+    <a href="#home" data-page="home" class="active">Home</a>
+    <a href="#evaluate" data-page="evaluate">Evaluate</a>
+    <a href="#challenges" data-page="challenges">Challenges</a>
+    <a href="#leaderboard" data-page="leaderboard">Leaderboard</a>
+  </nav>
+  <div class="autharea"><span id="authLabel">Not signed in</span><button id="authButton" class="btn" type="button" onclick="showPage(isSignedIn()?'home':'login')">♟ Sign in</button></div>
+</header>
+
+<main>
+<section id="home" class="page">
+  <div class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Build Better Prompts&nbsp; • &nbsp;Get Better Results</div>
+      <h1>Prompt<span class="gradient">Score</span> AI Helps You Write Better Prompts</h1>
+      <p>Get AI-powered evaluations, discover your weaknesses, and improve your prompts. Practice with timed challenges and track your progress.</p>
+      <div class="hero-actions"><button class="btn" onclick="showPage('evaluate')">🚀 Evaluate a Prompt&nbsp; →</button><button class="btn secondary" onclick="showPage('challenges')">🏆 Try a Challenge</button></div>
+      <div class="logos"><span class="logo-chip">AU</span><span class="logo-chip">AUCH Creative</span><span class="logo-chip">FRESHCON'26</span><span class="logo-chip">Air University</span></div>
+    </div>
+<div class="hero-visual">
+    <div class="carousel" id="heroCarousel">
+        <div class="carousel-track">
+            <img src="photo/01-cover-auch-four-events.jpg" alt="PromptScore AI homepage">
+            <img src="photo/02-speed-typing.jpg" alt="Prompt Engineering">
+            <img src="photo/03-prompt-engineering.jpg" alt="AI Prompt Evaluation">
+            <img src="photo/04-ai-image-generation.jpg" alt="Speed Prompt Challenge">
+            <img src="photo/05-roadmap-to-the-future.jpg" alt="Leaderboard and progress">
+        </div>
+
+        <button class="carousel-arrow prev" aria-label="Previous slide">❮</button>
+        <button class="carousel-arrow next" aria-label="Next slide">❯</button>
+
+        <div class="carousel-dots" aria-label="Choose a slide">
+            <button class="active" aria-label="Slide 1"></button>
+            <button aria-label="Slide 2"></button>
+            <button aria-label="Slide 3"></button>
+            <button aria-label="Slide 4"></button>
+            <button aria-label="Slide 5"></button>
+        </div>
+
+        <div class="slide-counter">1 / 5</div>
+    </div>
+</div>
+  </div>
+  <div class="features">
+    <article class="feature"><div class="feature-icon">✦</div><div><h3>AI Evaluation</h3><p>Get detailed feedback, scores and improvement suggestions for your prompts.</p></div></article>
+    <article class="feature"><div class="feature-icon" style="background:#26bd86">⏱</div><div><h3>Timed Challenges</h3><p>Test your skills in Speed Prompt and Prompt Master challenges.</p></div></article>
+    <article class="feature"><div class="feature-icon" style="background:#a34bff">▥</div><div><h3>Track Progress</h3><p>View scores, personal bests and leaderboard results.</p></div></article>
+    <article class="feature"><div class="feature-icon" style="background:#ff9c32">♧</div><div><h3>Learn & Improve</h3><p>Build better prompting skills and get more out of AI tools.</p></div></article>
+  </div>
+</section>
+
+<section id="evaluate" class="page hidden">
+  <div class="content">
+    <div class="section-head"><h1>Prompt Evaluation</h1><p>Enter a prompt to get a score and actionable feedback from your PromptScore API.</p></div>
+    <div id="challengeBar" class="panel hidden" style="margin-bottom:18px"><div class="row"><div><span class="pill" id="challengeMode">Challenge active</span><p class="muted" id="challengeHint">Submit your prompt before time runs out.</p></div><div id="timerDisplay" class="timer right">01:30</div></div></div>
+    <div class="grid">
+      <div class="panel">
+        <label for="promptInput">Your prompt</label><textarea id="promptInput" placeholder="Example: Act as a senior Python developer. Explain FastAPI dependency injection with a concise example..."></textarea>
+        <label for="purposeInput">Intended purpose (optional)</label><select id="purposeInput"><option value="">Auto-detect purpose</option><option>Code generation</option><option>Research</option><option>Writing</option><option>Summarization</option><option>Education</option><option>Business</option><option>Data analysis</option></select>
+        <div class="row" style="margin-top:16px"><button class="btn" id="evaluateBtn" onclick="evaluatePrompt()">Evaluate Prompt</button><button class="btn ghost" onclick="document.getElementById('promptInput').value=''">Clear</button></div>
+        <div id="evalStatus" class="status hidden" role="status"></div>
+      </div>
+      <div class="panel"><h2>Evaluation result</h2><div id="resultEmpty" class="muted">Your score, weaknesses, purpose and suggestions will appear here.</div><div id="resultBody" class="hidden"><div class="score"><span id="scoreValue">—</span><span style="font-size:22px">/10</span></div><p id="purposeResult" class="pill"></p><h3>Feedback</h3><div id="feedbackResult" class="muted"></div><h3>Suggested improvement</h3><div id="improvementResult" class="muted"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="challenges" class="page hidden">
+ <div class="content">
+  <div class="section-head"><h1>Prompt Challenges</h1><p>Choose a challenge. After student details and the 3-2-1-GO countdown, you will be redirected to evaluation automatically.</p></div>
+  <div class="grid">
+   <article class="card challenge-card"><span class="pill">⏱ 1 minute 30 seconds</span><h2>Speed Prompt</h2><p class="muted">Write and evaluate a strong prompt before the timer expires.</p><ul class="muted"><li>90-second timer</li><li>Submit one prompt</li><li>Score saved to leaderboard</li></ul><button class="btn" onclick="openChallenge('speed_prompt')">Start Speed Prompt</button></article>
+   <article class="card challenge-card"><span class="pill">⏱ 2 minutes</span><h2>Prompt Master</h2><p class="muted">Practice creating high-quality prompts with extra time.</p><ul class="muted"><li>120-second timer</li><li>Submit prompts during the challenge</li><li>Track your best result</li></ul><button class="btn" onclick="openChallenge('prompt_master')">Start Prompt Master</button></article>
+  </div>
+  <div class="panel" style="margin-top:20px"><h3>Student details</h3><p class="muted">Required before the countdown starts. Sign in first if your API requires authentication.</p>
+   <div class="form-row"><div><label for="studentName">Full name</label><input id="studentName" autocomplete="name" placeholder="Your name"></div><div><label for="rollNo">Roll number</label><input id="rollNo" placeholder="e.g. 2502858"></div><div><label for="className">Class / Program</label><input id="className" placeholder="BS Software Engineering"></div><div><label for="section">Section</label><input id="section" placeholder="e.g. A"></div></div>
+   <div id="challengeStatus" class="status hidden"></div>
+  </div>
+ </div>
+</section>
+
+<section id="leaderboard" class="page hidden">
+ <div class="content"><div class="section-head"><h1>Leaderboard</h1><p>Top saved challenge results from the PromptScore backend.</p></div><div class="panel"><div class="row"><span class="muted">Results are loaded from the API and may require sign-in.</span><button class="btn right" onclick="loadLeaderboard()">↻ Refresh</button></div><div id="leaderStatus" class="status hidden"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Class</th><th>Challenge</th><th>Best score</th></tr></thead><tbody id="leaderRows"><tr><td colspan="5" class="muted">Click Refresh to load results.</td></tr></tbody></table></div></div></div>
+</section>
+
+<section id="login" class="page hidden">
+ <div class="content" style="max-width:620px"><div class="section-head"><h1 id="authTitle">Sign in</h1><p>Use your PromptScore account to access protected evaluation and challenge endpoints.</p></div><div class="panel"><label for="emailInput">Email</label><input id="emailInput" type="email" autocomplete="email" placeholder="you@example.com"><label for="passwordInput">Password</label><input id="passwordInput" type="password" autocomplete="current-password" placeholder="Password"><div class="row" style="margin-top:18px"><button class="btn" id="authSubmit" onclick="authenticate()">Sign in</button><button class="btn ghost" onclick="toggleAuthMode()" id="authToggle">Create account</button></div><div id="authStatus" class="status hidden"></div><p class="muted small">This frontend expects your API to provide POST /login and POST /register. If your backend uses different paths or field names, update the API functions below.</p></div></div>
+</section>
+</main>
+<footer class="footer"><span>PromptScore AI</span> &nbsp;•&nbsp; Smarter Prompts, Stronger Results.</footer>
+
+<div id="countdownOverlay" class="countdown-overlay hidden" aria-live="assertive"><div><div class="countdown-caption">GET READY</div><div id="countdownNumber" class="countdown-number">3</div><div class="countdown-caption">Your challenge starts soon</div></div></div>
+
+
+<script>
+(() => {
+  const carousel = document.querySelector("#heroCarousel");
+  if (!carousel || carousel.dataset.carouselReady === "true") return;
+  carousel.dataset.carouselReady = "true";
+
+  const track = carousel.querySelector(".carousel-track");
+  const slides = [...track.querySelectorAll("img")];
+  slides.forEach(img => {
+  const wrap = document.createElement("div");
+  wrap.className = "slide";
+  wrap.style.setProperty("--img", `url("${img.getAttribute("src")}")`);
+  img.replaceWith(wrap);
+  wrap.appendChild(img);
+});
+  const dots = [...carousel.querySelectorAll(".carousel-dots button")];
+  const counter = carousel.querySelector(".slide-counter");
+  const prev = carousel.querySelector(".prev");
+  const next = carousel.querySelector(".next");
+
+  if (!slides.length) return;
+
+  let index = 0;
+  let timer;
+  let startX = 0;
+  let startY = 0;
+
+  function showSlide(newIndex) {
+    index = (newIndex + slides.length) % slides.length;
+
+    track.style.transform = `translateX(-${index * 100}%)`;
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("active", i === index);
+      dot.setAttribute("aria-current", i === index ? "true" : "false");
+    });
+
+    if (counter) {
+      counter.textContent = `${index + 1} / ${slides.length}`;
+    }
+  }
+
+  function restartAutoSlide() {
+    clearInterval(timer);
+    timer = setInterval(() => showSlide(index + 1), 2000);
+  }
+
+  function navigate(newIndex) {
+    showSlide(newIndex);
+    restartAutoSlide();
+  }
+
+  prev?.addEventListener("click", () => navigate(index - 1));
+  next?.addEventListener("click", () => navigate(index + 1));
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => navigate(i));
+  });
+
+  // Swipe support for touchscreens and mouse dragging
+  carousel.addEventListener("pointerdown", event => {
+    if (event.target.closest("button")) return;
+    startX = event.clientX;
+    startY = event.clientY;
+  });
+
+  carousel.addEventListener("pointerup", event => {
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+      navigate(index + (dx < 0 ? 1 : -1));
+    }
+  });
+
+  // Pause automatic changes while the user hovers
+  carousel.addEventListener("mouseenter", () => clearInterval(timer));
+  carousel.addEventListener("mouseleave", restartAutoSlide);
+
+  showSlide(0);
+  // Size the frame to the first photo, and report any photo that fails to load
+const first = slides[0];
+const fit = () => { if (first.naturalWidth) carousel.style.setProperty("--ratio", first.naturalWidth + " / " + first.naturalHeight); };
+first.complete ? fit() : first.addEventListener("load", fit);
+slides.forEach(img => img.addEventListener("error", () => console.warn("Image not found:", img.getAttribute("src"))));
+  restartAutoSlide();
+})();
+</script>
+
+<script>
+/* CONFIGURATION: change this if your deployed API base URL changes. */
+const API_BASE = (window.PROMPTSCORE_API || "https://promptscore-rho.vercel.app").replace(/\/+$/,"");
+const SPEED_PROMPT_SECONDS = 90;
+const PROMPT_MASTER_SECONDS = 120;
+let authMode = "login";
+let activeChallenge = null;
+let challengeStartedAt = null;
+let challengeDeadline = null;
+let timerInterval = null;
+let challengeScores = [];
+let lastEvaluation = null;
+let challengeSubmitting = false;
+
+function isSignedIn(){return Boolean(sessionStorage.getItem("ps_token"))}
+function getToken(){return sessionStorage.getItem("ps_token")||""}
+function authHeaders(){const h={"Content-Type":"application/json"};if(getToken())h.Authorization="Bearer "+getToken();return h}
+function updateAuthUI(){const signed=isSignedIn();document.getElementById("authLabel").textContent=signed?(sessionStorage.getItem("ps_user")||"Signed in"):"Not signed in";document.getElementById("authButton").textContent=signed?"Sign out":"♟ Sign in";document.getElementById("authButton").onclick=()=>signed?logout():showPage("login")}
+function logout(){sessionStorage.removeItem("ps_token");sessionStorage.removeItem("ps_user");updateAuthUI();showPage("home")}
+function showPage(name){const target=document.getElementById(name);if(!target)return;document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));target.classList.remove("hidden");document.querySelectorAll("[data-page]").forEach(a=>a.classList.toggle("active",a.dataset.page===name));if(location.hash!=="#"+name)history.replaceState(null,"","#"+name);if(name==="leaderboard")loadLeaderboard();window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("[data-page]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showPage(a.dataset.page)}));
+window.addEventListener("hashchange",()=>{const name=location.hash.slice(1);if(document.getElementById(name))showPage(name)});
+function setStatus(id,message,type=""){const el=document.getElementById(id);el.textContent=message;el.classList.remove("hidden","error","success");if(type)el.classList.add(type)}
+function clearStatus(id){const el=document.getElementById(id);el.classList.add("hidden");el.textContent=""}
+function setBusy(button,busy,text){const el=document.getElementById(button);if(!el.dataset.original)el.dataset.original=el.textContent;el.disabled=busy;el.textContent=busy?text:el.dataset.original}
+async function apiFetch(path,options={}){const response=await fetch(API_BASE+path,{...options,headers:{...authHeaders(),...(options.headers||{})}});let data;const raw=await response.text();try{data=raw?JSON.parse(raw):{}}catch{data={detail:raw}}if(!response.ok){if(response.status===401)throw new Error("Please sign in first. The API rejected this request.");throw new Error(data.detail||data.message||("API request failed ("+response.status+")"))}return data}
+function toggleAuthMode(){authMode=authMode==="login"?"register":"login";document.getElementById("authTitle").textContent=authMode==="login"?"Sign in":"Create account";document.getElementById("authSubmit").textContent=authMode==="login"?"Sign in":"Register";document.getElementById("authToggle").textContent=authMode==="login"?"Create account":"Back to sign in";document.getElementById("passwordInput").autocomplete=authMode==="login"?"current-password":"new-password";clearStatus("authStatus")}
+async function authenticate(){const email=document.getElementById("emailInput").value.trim();const password=document.getElementById("passwordInput").value;if(!email||!password){setStatus("authStatus","Enter your email and password.","error");return}setBusy("authSubmit",true,"Please wait…");try{const data=await apiFetch(authMode==="login"?"/login":"/register",{method:"POST",body:JSON.stringify({email,password})});const token=data.access_token||data.token||data.accessToken;if(authMode==="login"&&!token)throw new Error("Login response did not contain access_token or token. Adapt authenticate() to your API response.");if(token)sessionStorage.setItem("ps_token",token);sessionStorage.setItem("ps_user",data.user?.name||data.user?.email||email);updateAuthUI();setStatus("authStatus",authMode==="login"?"Signed in successfully.":"Account created. If needed, sign in now.","success");if(authMode==="login")setTimeout(()=>showPage("home"),700)}catch(e){setStatus("authStatus",e.message,"error")}finally{setBusy("authSubmit",false)}}
+
+function openChallenge(type){const fields=[["studentName","Full name"],["rollNo","Roll number"],["className","Class / Program"],["section","Section"]];for(const [id,label] of fields){if(!document.getElementById(id).value.trim()){setStatus("challengeStatus","Please enter "+label+" before starting.","error");document.getElementById(id).focus();return}}if(!isSignedIn()){setStatus("challengeStatus","Please sign in before starting. Your challenge results require an authenticated API session.","error");showPage("login");return}clearStatus("challengeStatus");activeChallenge={type,title:type==="speed_prompt"?"Speed Prompt":"Prompt Master",duration:type==="speed_prompt"?SPEED_PROMPT_SECONDS:PROMPT_MASTER_SECONDS};challengeScores=[];lastEvaluation=null;document.getElementById("promptInput").value="";document.getElementById("resultBody").classList.add("hidden");document.getElementById("resultEmpty").classList.remove("hidden");document.getElementById("challengeBar").classList.remove("hidden");document.getElementById("challengeMode").textContent=activeChallenge.title+" challenge";document.getElementById("challengeHint").textContent="Timer starts at GO. Submit your prompt before it reaches zero.";document.getElementById("timerDisplay").textContent=formatTime(activeChallenge.duration);document.getElementById("timerDisplay").classList.remove("urgent");showPage("evaluate");runCountdown()}
+function runCountdown(){const overlay=document.getElementById("countdownOverlay"),number=document.getElementById("countdownNumber");overlay.classList.remove("hidden");let count=3;number.textContent=count;const tick=()=>{count--;if(count>0){number.textContent=count;setTimeout(tick,700)}else if(count===0){number.textContent="GO!";document.querySelector(".countdown-caption").textContent="CHALLENGE STARTED";setTimeout(()=>{overlay.classList.add("hidden");startTimer()},450)}};setTimeout(tick,700)}
+function startTimer(){if(!activeChallenge)return;challengeStartedAt=Date.now();challengeDeadline=challengeStartedAt+activeChallenge.duration*1000;clearInterval(timerInterval);updateTimer();timerInterval=setInterval(updateTimer,200)}
+function formatTime(seconds){const s=Math.max(0,Math.ceil(seconds));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function updateTimer(){if(!activeChallenge||!challengeDeadline)return;const remaining=Math.max(0,(challengeDeadline-Date.now())/1000);const display=document.getElementById("timerDisplay");display.textContent=formatTime(remaining);display.classList.toggle("urgent",remaining<=15);if(remaining<=0){clearInterval(timerInterval);timerInterval=null;document.getElementById("challengeHint").textContent="Time is up. You can no longer submit another prompt for this run.";document.getElementById("evaluateBtn").disabled=true;if(!challengeScores.length)setStatus("evalStatus","Time expired before a prompt was evaluated. No score was submitted.","error")}}
+function challengeTimeExpired(){return activeChallenge&&challengeDeadline&&Date.now()>=challengeDeadline}
+async function evaluatePrompt(){const prompt=document.getElementById("promptInput").value.trim();if(!prompt){setStatus("evalStatus","Enter a prompt before evaluating.","error");return}if(activeChallenge&&(!challengeDeadline||challengeTimeExpired())){setStatus("evalStatus","Challenge time has expired. Start a new challenge to submit a prompt.","error");return}setBusy("evaluateBtn",true,"Evaluating…");clearStatus("evalStatus");try{const data=await apiFetch("/rag/evaluate",{method:"POST",body:JSON.stringify({prompt,purpose:document.getElementById("purposeInput").value||null})});const result=normalizeEvaluation(data);lastEvaluation={...result,raw:data};document.getElementById("resultEmpty").classList.add("hidden");document.getElementById("resultBody").classList.remove("hidden");document.getElementById("scoreValue").textContent=result.score===null?"—":result.score.toFixed(1);document.getElementById("purposeResult").textContent="Purpose: "+(result.purpose||"Not specified");document.getElementById("feedbackResult").textContent=result.feedback||"Evaluation returned no feedback.";document.getElementById("improvementResult").textContent=result.improvement||"No suggested improvement was returned.";setStatus("evalStatus","Prompt evaluated successfully.","success");if(activeChallenge){challengeScores.push(result.score===null?0:result.score);if(challengeTimeExpired()){setStatus("evalStatus","Evaluation returned after the timer expired. This result was not submitted as a challenge score.","error")}else{await submitChallengeResult()}}}catch(e){setStatus("evalStatus",e.message,"error")}finally{setBusy("evaluateBtn",false);if(activeChallenge&&challengeTimeExpired())document.getElementById("evaluateBtn").disabled=true}}
+function normalizeEvaluation(data){const nested=data.result||data.evaluation||data.data||data;const rawScore=nested.score??nested.overall_score??nested.total_score??nested.rating;let score=Number(rawScore);if(!Number.isFinite(score))score=null;else if(score>10&&score<=100)score=score/10;score=score===null?null:Math.max(0,Math.min(10,score));const purpose=nested.purpose||nested.prompt_purpose||nested.category||nested.intent||"Auto-detected";const feedback=nested.feedback||nested.analysis||nested.weaknesses||nested.explanation||nested.summary||"";const improvement=nested.improvement||nested.improved_prompt||nested.suggestions||nested.recommendations||nested.optimized_prompt||"";return{score,purpose,feedback:typeof feedback==="string"?feedback:JSON.stringify(feedback,null,2),improvement:typeof improvement==="string"?improvement:JSON.stringify(improvement,null,2)}}
+async function submitChallengeResult(){if(!activeChallenge||!lastEvaluation||challengeSubmitting)return;challengeSubmitting=true;const elapsed=Math.min(activeChallenge.duration,Math.max(0,Math.floor((Date.now()-challengeStartedAt)/1000)));const payload={name:document.getElementById("studentName").value.trim(),roll_no:document.getElementById("rollNo").value.trim(),class_name:document.getElementById("className").value.trim(),section:document.getElementById("section").value.trim(),challenge_type:activeChallenge.type,challenge_title:activeChallenge.title,scores:challengeScores,elapsed_seconds:elapsed};try{const data=await apiFetch("/challenges/submit",{method:"POST",body:JSON.stringify(payload)});setStatus("evalStatus","Challenge score saved. Best score: "+(data.best_score??lastEvaluation.score??"—")+"/10"+(data.is_new_personal_best?" — New personal best!":"")+(data.email_sent?" — notification email sent.":""),"success")}catch(e){setStatus("evalStatus","Prompt evaluated, but challenge score could not be saved: "+e.message,"error")}finally{challengeSubmitting=false}}
+async function loadLeaderboard(){const tbody=document.getElementById("leaderRows");tbody.innerHTML='<tr><td colspan="5">Loading…</td></tr>';clearStatus("leaderStatus");try{const data=await apiFetch("/challenges/leaderboard");const rows=Array.isArray(data)?data:(data.results||data.leaderboard||[]);if(!rows.length){tbody.innerHTML='<tr><td colspan="5">No leaderboard results yet.</td></tr>';return}tbody.innerHTML="";rows.forEach((r,i)=>{const tr=document.createElement("tr");const values=[i+1,r.name||"—",r.class_name||"—",r.challenge_title||r.challenge_type||"—",Number(r.best_score??r.score??0).toFixed(1)+"/10"];values.forEach(v=>{const td=document.createElement("td");td.textContent=String(v);tr.appendChild(td)});tbody.appendChild(tr)})}catch(e){tbody.innerHTML='<tr><td colspan="5">Could not load results.</td></tr>';setStatus("leaderStatus",e.message,"error")}}
+window.addEventListener("beforeunload",()=>clearInterval(timerInterval));
+updateAuthUI();
+const initial=location.hash.slice(1);showPage(document.getElementById(initial)?initial:"home");
+</script>
+</body>
+</html>
